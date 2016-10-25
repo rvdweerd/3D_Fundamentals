@@ -25,7 +25,7 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	cube(0.5f)
+	cube( 1.0f )
 {
 }
 
@@ -43,27 +43,15 @@ void Game::UpdateModel()
 
 void Game::ComposeFrame()
 {
-	auto linelist = cube.GetLines();
-	
-	// Transform to screenspace
-	for (auto& v : linelist.vertices) pst.Transform(v);
-	
-	// Draw all vertices based on indexlist
-	for (auto it = linelist.indices.cbegin(),
-		end = linelist.indices.cend();
-		it != end;
-		std::advance(it, 2))
+	auto lines = cube.GetLines();
+	for( auto& v : lines.vertices )
 	{
-		gfx.DrawLine(linelist.vertices[*it], linelist.vertices[*std::next(it)], Colors::Red);
+		pst.Transform( v );
 	}
-	/* Old fashioned way
-	for (int i = 0; i < linelist.indices.size() - 1; i+=2)
+	for( auto i = lines.indices.cbegin(),
+		end = lines.indices.cend();
+		i != end; std::advance( i,2 ) )
 	{
-		size_t i1 = linelist.indices[i];
-		size_t i2 = linelist.indices[i+1];
-		Vec3 v1 = linelist.vertices[i1];
-		Vec3 v2 = linelist.vertices[i2];
-		gfx.DrawLine(v1,v2, Colors::Red);
-	}*/
-
+		gfx.DrawLine( lines.vertices[*i],lines.vertices[*std::next( i )],Colors::White );
+	}
 }
