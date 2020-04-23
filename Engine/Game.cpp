@@ -24,7 +24,8 @@
 Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
-	gfx( wnd )
+	gfx( wnd ),
+	cube(0.5f)
 {
 }
 
@@ -39,14 +40,30 @@ void Game::Go()
 void Game::UpdateModel()
 {
 }
-#include "PubeScreenTransformer.h"
+
 void Game::ComposeFrame()
 {
-	PubeScreenTransformer pst;
-	Vec3 v0 = { 0.0f,0.5f,0.0f };
-	Vec3 v1 = { 0.5f,-0.5f,0.0f };
-	Vec3 v2 = { -0.5f,-0.5f,0.0f };
-	gfx.DrawLine( pst.GetTransformed( v0 ),pst.GetTransformed( v1 ),Colors::White );
-	gfx.DrawLine( pst.GetTransformed( v1 ),pst.GetTransformed( v2 ),Colors::White );
-	gfx.DrawLine( pst.GetTransformed( v2 ),pst.GetTransformed( v0 ),Colors::White );
+	auto linelist = cube.GetLines();
+	
+	// Transform to screenspace
+	for (auto& v : linelist.vertices) pst.Transform(v);
+	
+	// Draw all vertices based on indexlist
+	for (auto it = linelist.indices.cbegin(),
+		end = linelist.indices.cend();
+		it != end;
+		std::advance(it, 2))
+	{
+		gfx.DrawLine(linelist.vertices[*it], linelist.vertices[*std::next(it)], Colors::Red);
+	}
+	/* Old fashioned way
+	for (int i = 0; i < linelist.indices.size() - 1; i+=2)
+	{
+		size_t i1 = linelist.indices[i];
+		size_t i2 = linelist.indices[i+1];
+		Vec3 v1 = linelist.vertices[i1];
+		Vec3 v2 = linelist.vertices[i2];
+		gfx.DrawLine(v1,v2, Colors::Red);
+	}*/
+
 }
