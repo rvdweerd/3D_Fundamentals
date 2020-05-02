@@ -92,6 +92,6 @@ void Game::ComposeFrame()
 		end = lines.indices.cend();
 		i != end; std::advance( i,2 ) )
 	{
-		gfx.DrawLine( lines.vertices[*i],lines.vertices[*std::next( i )],Colors::White );
+		gfx.DrawLine( lines.vertices[*i],lines.vertices[*std::next( i )],Colors::Red );
 	}
 }
