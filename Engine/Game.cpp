@@ -94,4 +94,21 @@ void Game::ComposeFrame()
 	{
 		gfx.DrawLine( lines.vertices[*i],lines.vertices[*std::next( i )],Colors::Red );
 	}
+	//auto lines = teapot.GetLines();
+	//const Mat3 rot =
+	//	Mat3::RotationX(theta_x) *
+	//	Mat3::RotationY(theta_y) *
+	//	Mat3::RotationZ(theta_z);
+	//for (auto& v : lines.vertices)
+	//{
+	//	v *= rot;
+	//	v += { 0.0f, 0.0f, offset_z };
+	//	pst.Transform(v);
+	//}
+	//for (auto i = lines.indices.cbegin(),
+	//	end = lines.indices.cend();
+	//	i != end; std::advance(i, 2))
+	//{
+	//	gfx.DrawLine(lines.vertices[*i-1], lines.vertices[*std::next(i)-1], Colors::Red);
+	//}
 }

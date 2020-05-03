@@ -23,6 +23,7 @@
 #include "Graphics.h"
 #include "PubeScreenTransformer.h"
 #include "Cube.h"
+#include "Teapot.h"
 
 class Game
 {
@@ -44,10 +45,11 @@ private:
 	/*  User Variables              */
 	PubeScreenTransformer pst;
 	Cube cube;
+	Teapot teapot;
 	static constexpr float dTheta = (float)PI;
 	float theta_x = 0.0f;
 	float theta_y = 0.0f;
 	float theta_z = 0.0f;
-	float offset_z = 3.0f;
+	float offset_z = 10.0f;
 	/********************************/
 };
