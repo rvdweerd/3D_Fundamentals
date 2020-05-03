@@ -286,6 +286,48 @@ void Graphics::BeginFrame()
 	sysBuffer.Clear( Colors::Red );
 }
 
+void Graphics::DrawTriangle(const Vec2& v0, const Vec2& v1, const Vec2& v2, Color c)
+{
+	const Vec2* pv0 = &v0;
+	const Vec2* pv1 = &v1;
+	const Vec2* pv2 = &v2;
+
+	//sort from top y to bottom y
+	if (pv1->y < pv0->y) std::swap(pv0, pv1);
+	if (pv2->y < pv1->y) std::swap(pv1, pv2);
+	if (pv1->y < pv0->y) std::swap(pv0, pv1);
+
+	if (pv0->y == pv1->y) // natural flat top
+	{
+		if (pv1->x < pv0->x) std::swap(pv1, pv0);
+		DrawFlatTopTriangle(*pv0, *pv1, *pv2, c);
+	}
+	else if (pv1->y == pv2->y) // natural flat bottom
+	{
+		if (pv2->x < pv1->x) std::swap(pv1, pv2);
+		DrawFlatBottomTriangle(*pv0, *pv1, *pv2, c);
+	}
+	else // general trianle
+	{
+		const float alphaSplit =
+			(pv1->y - pv0->y) /
+			(pv2->y - pv0->y); // alpha = 0: split of v1 on the left is in top, alpha =1; split is on bottom
+
+		Vec2 vi = *pv0 + (*pv2 - *pv0) * alphaSplit;
+
+		if (pv1->x < vi.x)  //major right
+		{
+			DrawFlatBottomTriangle(*pv0, *pv1, vi, c);
+			DrawFlatTopTriangle(*pv1, vi, *pv2, c);
+		}
+		else // major left
+		{
+			DrawFlatBottomTriangle(*pv0, vi, *pv1, c);
+			DrawFlatTopTriangle(vi, *pv1, *pv2, c);
+		}
+	}
+}
+
 
 //////////////////////////////////////////////////
 //           Graphics Exception
@@ -378,6 +420,62 @@ void Graphics::DrawLine( float x1,float y1,float x2,float y2,Color c )
 		if( int( x2 ) > lastIntX )
 		{
 			PutPixel( int( x2 ),int( y2 ),c );
+		}
+	}
+}
+
+void Graphics::DrawFlatTopTriangle(const Vec2& v0, const Vec2& v1, const Vec2& v2, Color c)
+{
+	// calulcate slopes in screen space
+	float m0 = (v2.x - v0.x) / (v2.y - v0.y);
+	float m1 = (v2.x - v1.x) / (v2.y - v1.y);
+
+	// calculate start and end scanlines
+	const int yStart = (int)ceilf(v0.y - 0.5f);
+	const int yEnd = (int)ceilf(v2.y - 0.5f); // the scanline AFTER the last line drawn
+
+	for (int y = yStart; y < yEnd; y++)
+	{
+		// caluclate start and end points (x-coords)
+		// add 0.5 to y value because we're calculating based on pixel CENTERS
+		const float px0 = m0 * (float(y) + 0.5f - v0.y) + v0.x;
+		const float px1 = m1 * (float(y) + 0.5f - v1.y) + v1.x;
+
+		// calculate start and end pixels
+		const int xStart = (int)ceilf(px0 - 0.5f);
+		const int xEnd = (int)ceilf(px1 - 0.5f); // the pixel AFTER the last pixel drawn
+
+		for (int x = xStart; x < xEnd; x++)
+		{
+			PutPixel(x, y, c);
+		}
+	}
+}
+
+void Graphics::DrawFlatBottomTriangle(const Vec2& v0, const Vec2& v1, const Vec2& v2, Color c)
+{
+	// calulcate slopes in screen space
+	float m0 = (v1.x - v0.x) / (v1.y - v0.y);
+	float m1 = (v2.x - v0.x) / (v2.y - v0.y);
+
+	// calculate start and end scanlines
+	const int yStart = (int)ceilf(v0.y - 0.5f);
+	const int yEnd = (int)ceilf(v2.y - 0.5f); // the scanline AFTER the last line drawn
+
+	for (int y = yStart; y < yEnd; y++)
+	{
+		// caluclate start and end points
+		// add 0.5 to y value because we're calculating based on pixel CENTERS
+		const float px0 = m0 * (float(y) + 0.5f - v0.y) + v0.x;
+		const float px1 = m1 * (float(y) + 0.5f - v0.y) + v0.x;
+
+		// calculate start and end pixels
+		const int xStart = (int)ceilf(px0 - 0.5f);
+		const int xEnd = (int)ceilf(px1 - 0.5f); // the pixel AFTER the last pixel drawn
+
+		for (int x = xStart; x < xEnd; x++)
+		{
+			PutPixel(x, y, c);
 		}
 	}
 }
