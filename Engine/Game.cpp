@@ -21,7 +21,7 @@
 #include "MainWindow.h"
 #include "Game.h"
 #include "Mat3.h"
-
+#include <set>
 Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
@@ -80,7 +80,7 @@ void Game::ComposeFrame()
 	const Color colors[12] =
 	{
 		Colors::White,
-		Colors::Black,
+		Colors::Green,
 		Colors::Gray,
 		Colors::LightGray,
 		Colors::Red ,
@@ -98,20 +98,54 @@ void Game::ComposeFrame()
 		Mat3::RotationX( theta_x ) *
 		Mat3::RotationY( theta_y ) *
 		Mat3::RotationZ( theta_z );
+	
+	//std::vector<Vec3> pubSpaceVerts;
 	for( auto& v : triangles.vertices )
 	{
 		v *= rot;
 		v += { 0.0f,0.0f,offset_z };
-		pst.Transform( v );
+		if (wnd.kbd.KeyIsPressed(VK_SPACE))
+		{
+     		pst.Transform( v,true );
+		}
+		else
+		{
+			pst.Transform(v,false);
+		}
+		//pubSpaceVerts.push_back(v);
 	}
-	for( auto i = triangles.indices.cbegin(),
-		end = triangles.indices.cend();
-		i != end; std::advance( i,3 ) )
+	for (auto i = triangles.indices.cbegin(),
+		 end = triangles.indices.cend();
+		 i != end; std::advance(i, 3)  )
 	{
-		Color co = Colors::Red;
-		if ((end - i) % 2 == 0) co = Colors::Gray;
-		gfx.DrawTriangle( triangles.vertices[*i], triangles.vertices[*std::next( i )], triangles.vertices[*std::next(i,2)],
-			colors[std::distance(triangles.indices.cbegin(),i)/3]);
+		// Get triangle vertices 
+		Vec3 p1 = triangles.vertices[*i];
+		Vec3 p2 = triangles.vertices[*std::next(i)];
+		Vec3 p3 = triangles.vertices[*std::next(i, 2)];
+		
+		// Calculate triange and cube centroids
+		Vec3 triangleCentroid = ((p1 + p2) + p3) / 3;
+		Vec3 cubeCentroid = { 0.f,0.f,offset_z };
+		
+		// Calculate direction from cube centroid to triangle centroid
+		Vec3 CtoT = triangleCentroid - pst.Transform(cubeCentroid,true); 
+		// Calculate directions of (any) two sides of triangle
+		Vec3 tla = p1 - p2;
+		Vec3 tlb = p1 - p3;
+		
+		// Apply cross product to get surface normal and orient outward from cube
+		Vec3 surfaceNormal = { 
+			tla.y * tlb.z - tla.z * tlb.y,
+			tla.z * tlb.x - tla.x * tlb.z, 
+			tla.x * tlb.y - tla.y * tlb.x 
+		};
+		if (surfaceNormal * CtoT < 0) surfaceNormal = -surfaceNormal;
+		
+		// Only draw triangle if outward surface normal points to camera
+		if (surfaceNormal.z <0 )
+		{
+			gfx.DrawTriangle( p1,p2,p3, colors[std::distance(triangles.indices.cbegin(), i) / 3] );
+		}
 	}
 	//auto lines = teapot.GetLines();
 	//const Mat3 rot =
