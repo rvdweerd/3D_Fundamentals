@@ -26,7 +26,7 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	cube( 1.0f )
+	cube( 0.5f )
 {
 }
 
@@ -40,7 +40,7 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
-	const float dt = 1.0f / 60.0f;
+	const float dt = 2.0f / 60.0f;
 	if( wnd.kbd.KeyIsPressed( 'Q' ) )
 	{
 		theta_x = wrap_angle( theta_x + dTheta * dt );
@@ -122,13 +122,23 @@ void Game::ComposeFrame()
 		Vec3 p1 = triangles.vertices[*i];
 		Vec3 p2 = triangles.vertices[*std::next(i)];
 		Vec3 p3 = triangles.vertices[*std::next(i, 2)];
-		
+		Vec3 surfCentroid = (p3 + p1) / 2;
+
 		// Calculate triange and cube centroids
-		Vec3 triangleCentroid = ((p1 + p2) + p3) / 3;
+		Vec3 triangleCentroid = (p1 + p2 + p3) / 3;
 		Vec3 cubeCentroid = { 0.f,0.f,offset_z };
-		
+		if (wnd.kbd.KeyIsPressed(VK_SPACE))
+		{
+			pst.Transform(cubeCentroid, true);
+		}
+		else
+		{
+			pst.Transform(cubeCentroid, false);
+		}
+		Vec3 surfaceNormal_T = surfCentroid - cubeCentroid;
+
 		// Calculate direction from cube centroid to triangle centroid
-		Vec3 CtoT = triangleCentroid - pst.Transform(cubeCentroid,true); 
+		Vec3 CtoT = triangleCentroid - cubeCentroid; 
 		// Calculate directions of (any) two sides of triangle
 		Vec3 tla = p1 - p2;
 		Vec3 tlb = p1 - p3;
@@ -142,7 +152,8 @@ void Game::ComposeFrame()
 		if (surfaceNormal * CtoT < 0) surfaceNormal = -surfaceNormal;
 		
 		// Only draw triangle if outward surface normal points to camera
-		if (surfaceNormal.z <0 )
+		if (surfaceNormal.z <0.0001 )
+		//if (surfN.z < 0)
 		{
 			gfx.DrawTriangle( p1,p2,p3, colors[std::distance(triangles.indices.cbegin(), i) / 3] );
 		}

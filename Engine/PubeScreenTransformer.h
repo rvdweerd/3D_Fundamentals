@@ -19,9 +19,9 @@ public:
 		v.y = (-v.y * z_div + 1.0f) * yFactor;
 		return v;
 	}
-	Vec3 GetTransformed( const Vec3& v ) const
+	Vec3 GetTransformed( const Vec3& v , bool divide) const
 	{
-		return Transform( Vec3( v ) ,true);
+		return Transform( Vec3( v ) ,divide);
 	}
 private:
 	float xFactor;

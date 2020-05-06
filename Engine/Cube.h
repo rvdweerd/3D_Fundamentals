@@ -9,7 +9,7 @@ class Cube
 public:
 	Cube(float size)
 	{
-		const float side = size / 2.0f;
+		const float side = size;// / 2.0f;
 		vertices.emplace_back(  side, side, side  );
 		vertices.emplace_back(  side, side,-side  );
 		vertices.emplace_back(  side,-side, side  );
@@ -30,12 +30,12 @@ public:
 	IndextedTriangleList GetTriangles() const
 	{
 		return { vertices, {
-			1,5,4,  1,4,0, // top
+			1,5,4,  1,0,4, // top
 			5,7,3,  5,1,3, // front
-			7,5,4,  4,6,7, // left
-			0,1,2,  1,2,3, // right
-			4,6,0,  0,6,2, // back
-			6,7,3,  6,3,2 // bottom
+			7,5,4,  7,6,4, // left
+			1,0,2,  1,3,2, // right
+			0,4,6,  0,2,6, // back
+			6,7,3,  6,2,3 // bottom
 			} };
 	}
 private:
