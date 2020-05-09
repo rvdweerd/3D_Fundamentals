@@ -104,15 +104,6 @@ void Game::ComposeFrame()
 	{
 		v *= rot;
 		v += { 0.0f,0.0f,offset_z };
-		if (wnd.kbd.KeyIsPressed(VK_SPACE))
-		{
-     		pst.Transform( v,true );
-		}
-		else
-		{
-			pst.Transform(v,false);
-		}
-		//pubSpaceVerts.push_back(v);
 	}
 	for (auto i = triangles.indices.cbegin(),
 		 end = triangles.indices.cend();
@@ -124,21 +115,6 @@ void Game::ComposeFrame()
 		Vec3 p3 = triangles.vertices[*std::next(i, 2)];
 		Vec3 surfCentroid = (p3 + p1) / 2;
 
-		// Calculate triange and cube centroids
-		Vec3 triangleCentroid = (p1 + p2 + p3) / 3;
-		Vec3 cubeCentroid = { 0.f,0.f,offset_z };
-		if (wnd.kbd.KeyIsPressed(VK_SPACE))
-		{
-			pst.Transform(cubeCentroid, true);
-		}
-		else
-		{
-			pst.Transform(cubeCentroid, false);
-		}
-		Vec3 surfaceNormal_T = surfCentroid - cubeCentroid;
-
-		// Calculate direction from cube centroid to triangle centroid
-		Vec3 CtoT = triangleCentroid - cubeCentroid; 
 		// Calculate directions of (any) two sides of triangle
 		Vec3 tla = p1 - p2;
 		Vec3 tlb = p1 - p3;
@@ -149,14 +125,51 @@ void Game::ComposeFrame()
 			tla.z * tlb.x - tla.x * tlb.z, 
 			tla.x * tlb.y - tla.y * tlb.x 
 		};
-		if (surfaceNormal * CtoT < 0) surfaceNormal = -surfaceNormal;
 		
 		// Only draw triangle if outward surface normal points to camera
-		if (surfaceNormal.z <0.0001 )
-		//if (surfN.z < 0)
+		if ( p3 * surfaceNormal < 0.00001 )
 		{
+			if (!wnd.kbd.KeyIsPressed(VK_SPACE))
+			{
+     			pst.Transform(p1,true );
+				pst.Transform(p2, true);
+				pst.Transform(p3, true);
+			}
+			else
+			{
+				pst.Transform(p1,false);
+				pst.Transform(p2, false);
+				pst.Transform(p3, false);
+			}
+
 			gfx.DrawTriangle( p1,p2,p3, colors[std::distance(triangles.indices.cbegin(), i) / 3] );
+			
+
 		}
+			Vec3 from = pst.GetTransformed(surfCentroid, true);
+			Vec3 to = pst.GetTransformed(surfCentroid+surfaceNormal.GetNormalized()/2, true);
+			Color c = Colors::White;
+			if ( (*i == 1 && *std::next(i) == 0 && *std::next(i, 2) == 2)  ||
+				 (*i == 2 && *std::next(i) == 3 && *std::next(i, 2) == 1) )
+			{
+				c = Colors::Blue;
+				to = pst.GetTransformed(surfCentroid + surfaceNormal.GetNormalized() , true);
+			}
+			if ((*i == 1 && *std::next(i) == 5 && *std::next(i, 2) == 4) ||
+				(*i == 4 && *std::next(i) == 0 && *std::next(i, 2) == 1))
+			{
+				c = Colors::Green;
+				to = pst.GetTransformed(surfCentroid + surfaceNormal.GetNormalized(), true);
+			}
+			if ((*i == 0 && *std::next(i) == 4 && *std::next(i, 2) == 6) ||
+				(*i == 6 && *std::next(i) == 2 && *std::next(i, 2) == 0))
+			{
+				c = Colors::Red;
+				to = pst.GetTransformed(surfCentroid + surfaceNormal.GetNormalized(), true);
+			}
+			
+			//draw normal lines
+			gfx.DrawLine(Vec2(from),Vec2(to), c);
 	}
 	//auto lines = teapot.GetLines();
 	//const Mat3 rot =

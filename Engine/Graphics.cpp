@@ -417,7 +417,7 @@ void Graphics::DrawLine( float x1,float y1,float x2,float y2,Color c )
 			lastIntX = int( x );
 			PutPixel( lastIntX,int( y ),c );
 		}
-		if( int( x2 ) > lastIntX )
+ 		if( int( x2 ) > lastIntX )
 		{
 			PutPixel( int( x2 ),int( y2 ),c );
 		}
