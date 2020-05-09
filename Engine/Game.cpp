@@ -95,82 +95,63 @@ void Game::ComposeFrame()
 	//auto lines = cube.GetLines();
 	auto triangles = cube.GetTriangles();
 	const Mat3 rot =
-		Mat3::RotationX( theta_x ) *
-		Mat3::RotationY( theta_y ) *
-		Mat3::RotationZ( theta_z );
-	
+		Mat3::RotationX(theta_x) *
+		Mat3::RotationY(theta_y) *
+		Mat3::RotationZ(theta_z);
+
 	//std::vector<Vec3> pubSpaceVerts;
-	for( auto& v : triangles.vertices )
+	for (auto& v : triangles.vertices)
 	{
 		v *= rot;
-		v += { 0.0f,0.0f,offset_z };
+		v += { 0.0f, 0.0f, offset_z};// offset_z
 	}
-	for (auto i = triangles.indices.cbegin(),
-		 end = triangles.indices.cend();
-		 i != end; std::advance(i, 3)  )
+	for (auto& v : triangles.normals_axes)
+	{
+		v.p0 *= rot;
+		v.p1 *= rot;
+		v.p0 += { 0.0f, 0.0f, offset_z};// offset_z
+		v.p1 += { 0.0f, 0.0f, offset_z};// offset_z
+	}
+	for (size_t i = 0; i < triangles.indices.size() / 3; i++)
 	{
 		// Get triangle vertices 
-		Vec3 p1 = triangles.vertices[*i];
-		Vec3 p2 = triangles.vertices[*std::next(i)];
-		Vec3 p3 = triangles.vertices[*std::next(i, 2)];
-		Vec3 surfCentroid = (p3 + p1) / 2;
-
-		// Calculate directions of (any) two sides of triangle
-		Vec3 tla = p1 - p2;
-		Vec3 tlb = p1 - p3;
-		
+		Vec3 p1 = triangles.vertices[ triangles.indices[i * 3] ];
+		Vec3 p2 = triangles.vertices[ triangles.indices[i * 3 + 1]];
+		Vec3 p3 = triangles.vertices[ triangles.indices[i * 3 + 2]];
 		// Apply cross product to get surface normal and orient outward from cube
-		Vec3 surfaceNormal = { 
-			tla.y * tlb.z - tla.z * tlb.y,
-			tla.z * tlb.x - tla.x * tlb.z, 
-			tla.x * tlb.y - tla.y * tlb.x 
-		};
-		
-		// Only draw triangle if outward surface normal points to camera
-		if ( p3 * surfaceNormal < 0.00001 )
+		//Vec3 surfCentroid = (p3 + p1) / 2;
+		Vec3 surfaceNormal = (p1 - p2) % (p1 - p3);
+		if (p1 * surfaceNormal < 0.0f)
 		{
-			if (!wnd.kbd.KeyIsPressed(VK_SPACE))
-			{
-     			pst.Transform(p1,true );
-				pst.Transform(p2, true);
-				pst.Transform(p3, true);
-			}
-			else
-			{
-				pst.Transform(p1,false);
-				pst.Transform(p2, false);
-				pst.Transform(p3, false);
-			}
-
-			gfx.DrawTriangle( p1,p2,p3, colors[std::distance(triangles.indices.cbegin(), i) / 3] );
-			
-
+			triangles.cullFlags[i] = true;
 		}
-			Vec3 from = pst.GetTransformed(surfCentroid, true);
-			Vec3 to = pst.GetTransformed(surfCentroid+surfaceNormal.GetNormalized()/2, true);
-			Color c = Colors::White;
-			if ( (*i == 1 && *std::next(i) == 0 && *std::next(i, 2) == 2)  ||
-				 (*i == 2 && *std::next(i) == 3 && *std::next(i, 2) == 1) )
-			{
-				c = Colors::Blue;
-				to = pst.GetTransformed(surfCentroid + surfaceNormal.GetNormalized() , true);
-			}
-			if ((*i == 1 && *std::next(i) == 5 && *std::next(i, 2) == 4) ||
-				(*i == 4 && *std::next(i) == 0 && *std::next(i, 2) == 1))
-			{
-				c = Colors::Green;
-				to = pst.GetTransformed(surfCentroid + surfaceNormal.GetNormalized(), true);
-			}
-			if ((*i == 0 && *std::next(i) == 4 && *std::next(i, 2) == 6) ||
-				(*i == 6 && *std::next(i) == 2 && *std::next(i, 2) == 0))
-			{
-				c = Colors::Red;
-				to = pst.GetTransformed(surfCentroid + surfaceNormal.GetNormalized(), true);
-			}
-			
-			//draw normal lines
-			gfx.DrawLine(Vec2(from),Vec2(to), c);
 	}
+	for (auto& v : triangles.vertices)
+	{
+		pst.Transform(v, true);
+	}
+	for (auto& a : triangles.normals_axes)
+	{
+		pst.Transform(a.p0, true);
+		pst.Transform(a.p1, true);
+	}
+	for (size_t i = 0, end = triangles.indices.size() / 3; i < end; i++)
+	{
+		if (triangles.cullFlags[i])
+		gfx.DrawTriangle(triangles.vertices[triangles.indices[i * 3]], triangles.vertices[triangles.indices[i * 3 + 1]], triangles.vertices[triangles.indices[i * 3 + 2]],
+			colors[i]);
+	}
+	for (auto& a : triangles.normals_axes)
+	{
+		gfx.DrawLine({ a.p0.x, a.p0.y }, { a.p1.x, a.p1.y }, a.col);
+	}
+		// Only draw triangle if outward surface normal points to camera
+		//if (!wnd.kbd.KeyIsPressed(VK_SPACE))
+}
+			
+
+		
+
 	//auto lines = teapot.GetLines();
 	//const Mat3 rot =
 	//	Mat3::RotationX(theta_x) *
@@ -188,4 +169,3 @@ void Game::ComposeFrame()
 	//{
 	//	gfx.DrawLine(lines.vertices[*i-1], lines.vertices[*std::next(i)-1], Colors::Red);
 	//}
-}

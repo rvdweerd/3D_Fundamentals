@@ -92,6 +92,13 @@ public:
 	{
 		return x * rhs.x + y * rhs.y + z * rhs.z;
 	}
+	_Vec3 operator%(const _Vec3& rhs) const
+	{
+		return 	{	this->y * rhs.z - this->z * rhs.y,
+					this->z * rhs.x - this->x * rhs.z,
+					this->x * rhs.y - this->y * rhs.x
+		};
+	}
 	_Vec3	operator+( const _Vec3 &rhs ) const
 	{
 		return _Vec3( *this ) += rhs;
