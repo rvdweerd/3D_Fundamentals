@@ -13,7 +13,7 @@ public:
 	Vec3& Transform( Vec3& v , bool divide) const
 	{
 		float z_div = 1.0f;
-		if (divide) z_div = 1.0f / v.z;
+		if (divide) z_div = 1.0f / (float)v.z;
 		
 		v.x = (v.x * z_div + 1.0f) * xFactor;
 		v.y = (-v.y * z_div + 1.0f) * yFactor;

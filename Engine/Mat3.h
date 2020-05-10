@@ -114,6 +114,14 @@ public:
 			(T)0.0,-sinTheta, cosTheta,
 		};
 	}
+	static _Mat3 RotationBirdEye()
+	{
+		return{
+			(T)-0.7, (T)-0.40, (T)-0.57,
+			(T)0.0,  (T)0.83,  (T)-0.57,
+			(T)0.7,  (T)-0.40, (T)-0.57
+		};
+	}
 	static _Mat3 ColMat(Vec3 col1, Vec3 col2, Vec3 col3)
 	{
 		

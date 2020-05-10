@@ -21,10 +21,11 @@
 #pragma once
 
 #include "Graphics.h"
-#include "PubeScreenTransformer.h"
-#include "Cube.h"
-#include "Teapot.h"
-#include "Mat3.h"
+#include "Scene.h"
+//#include "PubeScreenTransformer.h"
+//#include "Cube.h"
+//#include "Teapot.h"
+//#include "Mat3.h"
 
 class Game
 {
@@ -38,20 +39,15 @@ private:
 	void UpdateModel();
 	/********************************/
 	/*  User Functions              */
+	void CycleScenes();
 	/********************************/
 private:
 	MainWindow& wnd;
 	Graphics gfx;
 	/********************************/
 	/*  User Variables              */
-	PubeScreenTransformer pst;
-	Cube cube;
-	Teapot teapot;
-	static constexpr float AngVel = (float)PI/14;
-	float Dtheta_x = 0.0f;
-	float Dtheta_y = 0.0f;
-	float Dtheta_z = 0.0f;
-	float offset_z = 10.0f;
-	Mat3 R = Mat3::Identity();
+	//Teapot teapot;
+	std::vector<std::unique_ptr<Scene>> scenes;
+	std::vector<std::unique_ptr<Scene>>::iterator currentScene;
 	/********************************/
 };

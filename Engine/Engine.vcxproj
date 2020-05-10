@@ -153,8 +153,12 @@
     <ClInclude Include="Mat3.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="PubeScreenTransformer.h" />
+    <ClInclude Include="Pyramid.h" />
     <ClInclude Include="Rect.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="SolidCubeScene.h" />
+    <ClInclude Include="SolidPyramidScene.h" />
     <ClInclude Include="Surface.h" />
     <ClInclude Include="Teapot.h" />
     <ClInclude Include="Vec2.h" />

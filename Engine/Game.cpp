@@ -22,12 +22,17 @@
 #include "Game.h"
 #include "Mat3.h"
 #include <set>
+#include "SolidCubeScene.h"
+#include "SolidPyramidScene.h"
+
 Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
-	gfx( wnd ),
-	cube( 0.5f )
+	gfx( wnd )
 {
+	scenes.push_back(std::make_unique<SolidCubeScene>());
+	scenes.push_back(std::make_unique<SolidPyramidScene>());
+	currentScene = scenes.begin();
 }
 
 void Game::Go()
@@ -41,147 +46,34 @@ void Game::Go()
 void Game::UpdateModel()
 {
 	const float dt = 4.0f / 60.0f;
-	Dtheta_x = 0.0f;
-	Dtheta_y = 0.0f;
-	Dtheta_z = 0.0f;
-	if (wnd.kbd.KeyIsPressed('Q'))
+	while (!wnd.kbd.KeyIsEmpty())
 	{
-		Dtheta_x = AngVel * dt;
+		const auto e = wnd.kbd.ReadKey();
+		if (e.GetCode() == VK_TAB && e.IsPress())
+		{
+			CycleScenes();
+		}
 	}
-	if (wnd.kbd.KeyIsPressed('W'))
+	// update scene
+	(*currentScene)->Update(wnd.kbd, wnd.mouse, dt);
+}
+
+void Game::CycleScenes()
+{
+	if (std::next(currentScene) == scenes.end())
 	{
-		Dtheta_y = AngVel * dt;
+		currentScene = scenes.begin();
 	}
-	if (wnd.kbd.KeyIsPressed('E'))
+	else
 	{
-		Dtheta_z = AngVel * dt;
-	}
-	if (wnd.kbd.KeyIsPressed('A'))
-	{
-		Dtheta_x = -AngVel * dt;
-	}
-	if (wnd.kbd.KeyIsPressed('S'))
-	{
-		Dtheta_y = -AngVel * dt;
-	}
-	if (wnd.kbd.KeyIsPressed('D'))
-	{
-		Dtheta_z = -AngVel * dt;
-	}
-	if (wnd.kbd.KeyIsPressed('R'))
-	{
-		offset_z += 0.5f * dt;
-	}
-	if (wnd.kbd.KeyIsPressed('F'))
-	{
-		offset_z -= 0.5f * dt;
-	}
-	if (wnd.kbd.KeyIsPressed(VK_SPACE))
-	{
-		R = Mat3::Identity();
-		
+		currentScene = std::next(currentScene);
 	}
 }
 
-	const Color colors[12] =
-	{
-		Colors::White,
-		Colors::Green,
-		Colors::Gray,
-		Colors::LightGray,
-		Colors::Red ,
-		Colors::Green,
-		Colors::Blue ,
-		Colors::Yellow,
-		Colors::Cyan,
-		Colors::Magenta,
-		Colors::Blue,
-		Colors::Red
-	};
+	
 void Game::ComposeFrame()
 {
-	auto triangles = cube.GetTriangles();
-	// get local axis orientation
-	Vec3 x_local = (triangles.normals_axes[1].p1 - triangles.normals_axes[1].p0).GetNormalized();
-	Vec3 y_local = (triangles.normals_axes[3].p1 - triangles.normals_axes[3].p0).GetNormalized();
-	Vec3 z_local = (triangles.normals_axes[5].p1 - triangles.normals_axes[5].p0).GetNormalized();
-	Mat3 Q = Mat3::ColMat(x_local, y_local, z_local);
-	Mat3 QT = Q.Transpose();
-
-	//auto lines = cube.GetLines();
-	const Mat3 rot =
-		Mat3::RotationX(Dtheta_x ) *
-		Mat3::RotationZ(Dtheta_z) *
-		Mat3::RotationY(Dtheta_y ) 
-		;
-	R = rot*R;
-
-	//std::vector<Vec3> pubSpaceVerts;
-	for (auto& v : triangles.vertices)
-	{
-		v *= R;
-		v += { 0.0f, 0.0f, offset_z};// offset_z
-	}
-	for (auto& a : triangles.normals_axes)
-	{
-		a.p0 *= R;
-		a.p1 *= R;
-		a.p0 += { 0.0f, 0.0f, offset_z};// offset_z
-		a.p1 += { 0.0f, 0.0f, offset_z};// offset_z
-	}
-	// Apply backface culling
-	for (size_t i = 0; i < triangles.indices.size() / 3; i++)
-	{
-		// Get transformed surface normal (brought to focal point Origin)
-		Vec3 sn = triangles.normals_axes[i/2].p1 - triangles.normals_axes[i/2].p0;
-		// Get vector from focal point Origin to one of the triangle's corners (any of the three vertices, transformed in world)
-		Vec3 p1 = triangles.vertices[ triangles.indices[i * 3] ];
-		// Check if these are in opposite directions (this means the we can see the front triangle 
-		if (p1 * sn < 0.0f)
-		{
-			triangles.cullFlags[i] = true;
-		}
-	}
-	for (auto& v : triangles.vertices)
-	{
-		pst.Transform(v, true);
-	}
-	for (auto& a : triangles.normals_axes)
-	{
-		pst.Transform(a.p0, true);
-		pst.Transform(a.p1, true);
-	}
-	// Draw triangles
-	for (size_t i = 0, end = triangles.indices.size() / 3; i < end; i++)
-	{
-		if (triangles.cullFlags[i])
-		gfx.DrawTriangle(
-			triangles.vertices[triangles.indices[i * 3]], 
-			triangles.vertices[triangles.indices[i * 3 + 1]], 
-			triangles.vertices[triangles.indices[i * 3 + 2]],
-			colors[3]);
-	}
-	// Draw Cube wireframe
-	auto lines = cube.GetLines();
-	size_t nLinePoints = lines.indices.size();
-	for (size_t i = 0, end = nLinePoints - 2; i <= end; i += 2)
-	{
-		gfx.DrawLine(triangles.vertices[lines.indices[i]], triangles.vertices[lines.indices[i + 1]], Colors::White);
-	}
-	// Overdraw front facing edges
-	for (size_t i = 0, end = triangles.indices.size() / 3; i < end; i++)
-	{
-		if (triangles.cullFlags[i])
-		{
-			gfx.DrawLine(triangles.vertices[triangles.indices[i * 3]],triangles.vertices[triangles.indices[i * 3 + 1]],Colors::Gray);
-			gfx.DrawLine(triangles.vertices[triangles.indices[i * 3 + 1]],triangles.vertices[triangles.indices[i * 3 + 2]],Colors::Gray);
-		}
-	}
-	// Draw axes & normals
-	for (auto& a : triangles.normals_axes)
-	{
-		gfx.DrawLine({ a.p0.x, a.p0.y }, { a.p1.x, a.p1.y }, a.col);
-	}
+	(*currentScene)->Draw(gfx);
 }
 			
 
