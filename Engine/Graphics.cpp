@@ -307,7 +307,7 @@ void Graphics::DrawTriangle(const Vec2& v0, const Vec2& v1, const Vec2& v2, Colo
 		if (pv2->x < pv1->x) std::swap(pv1, pv2);
 		DrawFlatBottomTriangle(*pv0, *pv1, *pv2, c);
 	}
-	else // general trianle
+	else // general triangle
 	{
 		const float alphaSplit =
 			(pv1->y - pv0->y) /
@@ -326,6 +326,9 @@ void Graphics::DrawTriangle(const Vec2& v0, const Vec2& v1, const Vec2& v2, Colo
 			DrawFlatTopTriangle(vi, *pv1, *pv2, c);
 		}
 	}
+	//DrawLine(v0, v1, Colors::Gray);
+	//DrawLine(v1, v2, Colors::Gray);
+
 }
 
 

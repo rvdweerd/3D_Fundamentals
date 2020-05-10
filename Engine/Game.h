@@ -24,6 +24,7 @@
 #include "PubeScreenTransformer.h"
 #include "Cube.h"
 #include "Teapot.h"
+#include "Mat3.h"
 
 class Game
 {
@@ -46,10 +47,11 @@ private:
 	PubeScreenTransformer pst;
 	Cube cube;
 	Teapot teapot;
-	static constexpr float dTheta = (float)PI/4;
-	float theta_x = 0.0f;
-	float theta_y = 0.0f;
-	float theta_z = 0.0f;
+	static constexpr float AngVel = (float)PI/14;
+	float Dtheta_x = 0.0f;
+	float Dtheta_y = 0.0f;
+	float Dtheta_z = 0.0f;
 	float offset_z = 10.0f;
+	Mat3 R = Mat3::Identity();
 	/********************************/
 };

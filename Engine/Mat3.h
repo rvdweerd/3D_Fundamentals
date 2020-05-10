@@ -114,6 +114,23 @@ public:
 			(T)0.0,-sinTheta, cosTheta,
 		};
 	}
+	static _Mat3 ColMat(Vec3 col1, Vec3 col2, Vec3 col3)
+	{
+		
+		return{
+			(T)col1.x, (T)col2.x, (T)col3.x,
+			(T)col1.y, (T)col2.y, (T)col3.y,
+			(T)col1.z, (T)col2.z, (T)col3.z,
+		};
+	}
+	_Mat3 Transpose()
+	{
+		return{
+			(T)elements[0][0], (T)elements[1][0], (T)elements[2][0],
+			(T)elements[0][1], (T)elements[1][1], (T)elements[2][1],
+			(T)elements[0][2], (T)elements[1][2], (T)elements[2][2],
+		};
+	}
 public:
 	// [ row ][ col ]
 	T elements[3][3];

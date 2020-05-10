@@ -40,43 +40,49 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
-	const float dt = 2.0f / 60.0f;
-	if( wnd.kbd.KeyIsPressed( 'Q' ) )
+	const float dt = 4.0f / 60.0f;
+	Dtheta_x = 0.0f;
+	Dtheta_y = 0.0f;
+	Dtheta_z = 0.0f;
+	if (wnd.kbd.KeyIsPressed('Q'))
 	{
-		theta_x = wrap_angle( theta_x + dTheta * dt );
+		Dtheta_x = AngVel * dt;
 	}
-	if( wnd.kbd.KeyIsPressed( 'W' ) )
+	if (wnd.kbd.KeyIsPressed('W'))
 	{
-		theta_y = wrap_angle( theta_y + dTheta * dt );
+		Dtheta_y = AngVel * dt;
 	}
-	if( wnd.kbd.KeyIsPressed( 'E' ) )
+	if (wnd.kbd.KeyIsPressed('E'))
 	{
-		theta_z = wrap_angle( theta_z + dTheta * dt );
+		Dtheta_z = AngVel * dt;
 	}
-	if( wnd.kbd.KeyIsPressed( 'A' ) )
+	if (wnd.kbd.KeyIsPressed('A'))
 	{
-		theta_x = wrap_angle( theta_x - dTheta * dt );
+		Dtheta_x = -AngVel * dt;
 	}
-	if( wnd.kbd.KeyIsPressed( 'S' ) )
+	if (wnd.kbd.KeyIsPressed('S'))
 	{
-		theta_y = wrap_angle( theta_y - dTheta * dt );
+		Dtheta_y = -AngVel * dt;
 	}
-	if( wnd.kbd.KeyIsPressed( 'D' ) )
+	if (wnd.kbd.KeyIsPressed('D'))
 	{
-		theta_z = wrap_angle( theta_z - dTheta * dt );
+		Dtheta_z = -AngVel * dt;
 	}
 	if (wnd.kbd.KeyIsPressed('R'))
 	{
-		offset_z += 2.0f*dt;
+		offset_z += 0.5f * dt;
 	}
 	if (wnd.kbd.KeyIsPressed('F'))
 	{
-		offset_z -= 2.0f * dt;
+		offset_z -= 0.5f * dt;
+	}
+	if (wnd.kbd.KeyIsPressed(VK_SPACE))
+	{
+		R = Mat3::Identity();
+		
 	}
 }
 
-void Game::ComposeFrame()
-{
 	const Color colors[12] =
 	{
 		Colors::White,
@@ -92,36 +98,46 @@ void Game::ComposeFrame()
 		Colors::Blue,
 		Colors::Red
 	};
-	//auto lines = cube.GetLines();
+void Game::ComposeFrame()
+{
 	auto triangles = cube.GetTriangles();
+	// get local axis orientation
+	Vec3 x_local = (triangles.normals_axes[1].p1 - triangles.normals_axes[1].p0).GetNormalized();
+	Vec3 y_local = (triangles.normals_axes[3].p1 - triangles.normals_axes[3].p0).GetNormalized();
+	Vec3 z_local = (triangles.normals_axes[5].p1 - triangles.normals_axes[5].p0).GetNormalized();
+	Mat3 Q = Mat3::ColMat(x_local, y_local, z_local);
+	Mat3 QT = Q.Transpose();
+
+	//auto lines = cube.GetLines();
 	const Mat3 rot =
-		Mat3::RotationX(theta_x) *
-		Mat3::RotationY(theta_y) *
-		Mat3::RotationZ(theta_z);
+		Mat3::RotationX(Dtheta_x ) *
+		Mat3::RotationZ(Dtheta_z) *
+		Mat3::RotationY(Dtheta_y ) 
+		;
+	R = rot*R;
 
 	//std::vector<Vec3> pubSpaceVerts;
 	for (auto& v : triangles.vertices)
 	{
-		v *= rot;
+		v *= R;
 		v += { 0.0f, 0.0f, offset_z};// offset_z
 	}
-	for (auto& v : triangles.normals_axes)
+	for (auto& a : triangles.normals_axes)
 	{
-		v.p0 *= rot;
-		v.p1 *= rot;
-		v.p0 += { 0.0f, 0.0f, offset_z};// offset_z
-		v.p1 += { 0.0f, 0.0f, offset_z};// offset_z
+		a.p0 *= R;
+		a.p1 *= R;
+		a.p0 += { 0.0f, 0.0f, offset_z};// offset_z
+		a.p1 += { 0.0f, 0.0f, offset_z};// offset_z
 	}
+	// Apply backface culling
 	for (size_t i = 0; i < triangles.indices.size() / 3; i++)
 	{
-		// Get triangle vertices 
+		// Get transformed surface normal (brought to focal point Origin)
+		Vec3 sn = triangles.normals_axes[i/2].p1 - triangles.normals_axes[i/2].p0;
+		// Get vector from focal point Origin to one of the triangle's corners (any of the three vertices, transformed in world)
 		Vec3 p1 = triangles.vertices[ triangles.indices[i * 3] ];
-		Vec3 p2 = triangles.vertices[ triangles.indices[i * 3 + 1]];
-		Vec3 p3 = triangles.vertices[ triangles.indices[i * 3 + 2]];
-		// Apply cross product to get surface normal and orient outward from cube
-		//Vec3 surfCentroid = (p3 + p1) / 2;
-		Vec3 surfaceNormal = (p1 - p2) % (p1 - p3);
-		if (p1 * surfaceNormal < 0.0f)
+		// Check if these are in opposite directions (this means the we can see the front triangle 
+		if (p1 * sn < 0.0f)
 		{
 			triangles.cullFlags[i] = true;
 		}
@@ -135,18 +151,37 @@ void Game::ComposeFrame()
 		pst.Transform(a.p0, true);
 		pst.Transform(a.p1, true);
 	}
+	// Draw triangles
 	for (size_t i = 0, end = triangles.indices.size() / 3; i < end; i++)
 	{
 		if (triangles.cullFlags[i])
-		gfx.DrawTriangle(triangles.vertices[triangles.indices[i * 3]], triangles.vertices[triangles.indices[i * 3 + 1]], triangles.vertices[triangles.indices[i * 3 + 2]],
-			colors[i]);
+		gfx.DrawTriangle(
+			triangles.vertices[triangles.indices[i * 3]], 
+			triangles.vertices[triangles.indices[i * 3 + 1]], 
+			triangles.vertices[triangles.indices[i * 3 + 2]],
+			colors[3]);
 	}
+	// Draw Cube wireframe
+	auto lines = cube.GetLines();
+	size_t nLinePoints = lines.indices.size();
+	for (size_t i = 0, end = nLinePoints - 2; i <= end; i += 2)
+	{
+		gfx.DrawLine(triangles.vertices[lines.indices[i]], triangles.vertices[lines.indices[i + 1]], Colors::White);
+	}
+	// Overdraw front facing edges
+	for (size_t i = 0, end = triangles.indices.size() / 3; i < end; i++)
+	{
+		if (triangles.cullFlags[i])
+		{
+			gfx.DrawLine(triangles.vertices[triangles.indices[i * 3]],triangles.vertices[triangles.indices[i * 3 + 1]],Colors::Gray);
+			gfx.DrawLine(triangles.vertices[triangles.indices[i * 3 + 1]],triangles.vertices[triangles.indices[i * 3 + 2]],Colors::Gray);
+		}
+	}
+	// Draw axes & normals
 	for (auto& a : triangles.normals_axes)
 	{
 		gfx.DrawLine({ a.p0.x, a.p0.y }, { a.p1.x, a.p1.y }, a.col);
 	}
-		// Only draw triangle if outward surface normal points to camera
-		//if (!wnd.kbd.KeyIsPressed(VK_SPACE))
 }
 			
 
