@@ -51,7 +51,7 @@ public:
 		}
 		// Update rotation matrix based on keyboard input
 		Mat3 rot =	Mat3::RotationX(Dtheta_x) *	Mat3::RotationZ(Dtheta_z) *	Mat3::RotationY(Dtheta_y);
-		R_main = rot*R_main;
+		R_main = rot * R_main ;
 	}
 	virtual void Draw(Graphics& gfx) const override
 	{

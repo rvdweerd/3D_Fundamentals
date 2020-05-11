@@ -15,10 +15,10 @@ public:
 		vertices.emplace_back( 0.0f, 0.0f,		-side);
 		vertices.emplace_back(-side, 0.0f,		 0.0f);
 		vertices.emplace_back( 0.0f, 0.0f,		 side);
-		vertices.emplace_back( 0.0f, 1.64f*side, 0.0f);
+		vertices.emplace_back( 0.0f, 1.0f*side, 0.0f);
 		Vec3 m0 = (vertices[0] + vertices[1] + vertices[4]) / 3;
 		Vec3 n0 = (vertices[1] - vertices[0]) % (vertices[4] - vertices[0]).GetNormalized();
-		normals_axes.emplace_back(m0, m0+n0, Colors::White); // Axis0
+		normals_axes.emplace_back(m0, m0+n0, Colors::Yellow); // Axis0
 
 		Vec3 m1 = (vertices[1] + vertices[2] + vertices[4]) / 3;
 		Vec3 n1 = (vertices[2] - vertices[1]) % (vertices[4] - vertices[1]).GetNormalized();

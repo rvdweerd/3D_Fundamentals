@@ -13,6 +13,7 @@ public:
 		Dtheta_x = 0.0f;
 		Dtheta_y = 0.0f;
 		Dtheta_z = 0.0f;
+		Dtheta_r = 0.0f;
 		if (kbd.KeyIsPressed('Q'))
 		{
 			Dtheta_x = AngVel * dt;
@@ -37,6 +38,10 @@ public:
 		{
 			Dtheta_z = -AngVel * dt;
 		}
+		if (kbd.KeyIsPressed('T')) // rotate around one of the sides
+		{
+			Dtheta_r = AngVel * dt;
+		}
 		if (kbd.KeyIsPressed('R'))
 		{
 			offset_z += 0.5f * dt;
@@ -49,9 +54,25 @@ public:
 		{
 			R_main = Mat3::Identity();
 		}
+		auto triangles = pyramid.GetTriangles();
+		Vec3 r = triangles.normals_axes[0].p1;// -triangles.normals_axes[0].p0;
+		r.Normalize();
+		Vec3 s;
+		if		(abs(r.x) <= abs(r.y) && abs(r.x) <= abs(r.z)) s = {0.f,-r.z,r.y};
+		else if (abs(r.y) <= abs(r.x) && abs(r.y) <= abs(r.z)) s = { -r.z,0.f,r.x };
+		else if (abs(r.z) <= abs(r.x) && abs(r.z) <= abs(r.y)) s = { -r.y,r.x,0.f };
+		s.Normalize();
+		Vec3 t = r % s;
+		t.Normalize();
+
+
+		Mat3 M = Mat3::ColMat(r, s, t);
+		Mat3 M_T = M.Transpose();
+
+		Mat3 rot1 = M*Mat3::RotationX(Dtheta_r)*M_T ;
 		// Update rotation matrix based on keyboard input
-		Mat3 rot = Mat3::RotationX(Dtheta_x) * Mat3::RotationZ(Dtheta_z) * Mat3::RotationY(Dtheta_y);
-		R_main = rot * R_main;
+		Mat3 rot2 = Mat3::RotationX(Dtheta_x) * Mat3::RotationZ(Dtheta_z) * Mat3::RotationY(Dtheta_y);
+		R_main =  rot2*rot1*R_main;
 	}
 	virtual void Draw(Graphics& gfx) const override
 	{
@@ -131,6 +152,7 @@ private:
 	float Dtheta_x = 0.0f;
 	float Dtheta_y = 0.0f;
 	float Dtheta_z = 0.0f;
+	float Dtheta_r = 0.0f;
 	float offset_z = 3.0f;
 	Mat3 R_main = Mat3::RotationBirdEye();
 	Pyramid pyramid = Pyramid(0.5f);
