@@ -161,6 +161,8 @@
     <ClInclude Include="SolidPyramidScene.h" />
     <ClInclude Include="Surface.h" />
     <ClInclude Include="Teapot.h" />
+    <ClInclude Include="TexCubeScene.h" />
+    <ClInclude Include="TexVertex.h" />
     <ClInclude Include="Vec2.h" />
     <ClInclude Include="Vec3.h" />
   </ItemGroup>
@@ -242,6 +244,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Chili.ico" />
+    <Image Include="Images\sauron-bhole-100x100.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -24,6 +24,7 @@
 #include <set>
 #include "SolidCubeScene.h"
 #include "SolidPyramidScene.h"
+#include "TexCubeScene.h"
 
 Game::Game( MainWindow& wnd )
 	:
@@ -32,6 +33,7 @@ Game::Game( MainWindow& wnd )
 {
 	scenes.push_back(std::make_unique<SolidCubeScene>());
 	scenes.push_back(std::make_unique<SolidPyramidScene>());
+	scenes.push_back(std::make_unique<TexCubeScene>());
 	currentScene = scenes.begin();
 }
 

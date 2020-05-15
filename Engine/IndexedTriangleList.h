@@ -15,9 +15,10 @@ struct Axis
 	Vec3 p1;
 	Color col = Colors::White;
 };
-struct IndextedTriangleList
+template <class T>
+struct IndexedTriangleList
 {
-	IndextedTriangleList(std::vector<Vec3> verts_in, std::vector<size_t> ind_in, std::vector<Axis> axs_in)
+	IndexedTriangleList(std::vector<T> verts_in, std::vector<size_t> ind_in, std::vector<Axis> axs_in)
 		:
 		vertices(std::move(verts_in)),
 		indices(std::move(ind_in)),
@@ -27,7 +28,7 @@ struct IndextedTriangleList
 		assert(indices.size() % 3 == 0);
 		cullFlags.resize(indices.size() / 3, false);
 	}
-	std::vector<Vec3> vertices;
+	std::vector<T> vertices;
 	std::vector<size_t> indices;
 	std::vector<bool> cullFlags;
 	std::vector<Axis> normals_axes;

@@ -59,7 +59,7 @@ public:
 			3,4,4,0,0,3
 			} };
 	}
-	IndextedTriangleList GetTriangles() const
+	IndexedTriangleList<Vec3> GetTriangles() const
 	{
 		return {
 			vertices,

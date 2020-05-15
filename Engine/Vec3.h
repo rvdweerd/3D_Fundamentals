@@ -47,11 +47,11 @@ public:
 	}
 	T		Len() const
 	{
-		return sqrt( LenSq() );
+		return (T)sqrt( LenSq() );
 	}
 	_Vec3&	Normalize()
 	{
-		const T length = Len();
+		const T length = (T)Len();
 		x /= length;
 		y /= length;
 		z /= length;
@@ -136,6 +136,15 @@ public:
 	bool	operator!=( const _Vec3 &rhs ) const
 	{
 		return !(*this == rhs);
+	}
+	_Vec3 InterpolateTo( const _Vec3& dest, float alpha) const
+	{
+		/*return {
+			x + (dest.x - x) * alpha,
+			y + (dest.y - y) * alpha,
+			z + (dest.z - z) * alpha
+		};*/
+		return *this + (dest - *this) * alpha;
 	}
 public:
 	T z;

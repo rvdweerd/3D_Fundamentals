@@ -99,6 +99,12 @@
     <ClInclude Include="SolidPyramidScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TexCubeScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TexVertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXErr.cpp">
@@ -144,6 +150,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Chili.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\sauron-bhole-100x100.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

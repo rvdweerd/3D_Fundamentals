@@ -26,6 +26,7 @@
 #include <string>
 #include <assert.h>
 #include <memory>
+#include <fstream>
 
 
 class Surface
