@@ -575,8 +575,10 @@ void Graphics::DrawFlatTriangleTex( const TexVertex& v0, const TexVertex& v1, co
 		for (int x = xStart; x < xEnd; x++, itcLine += dtcLine)
 		{
 			PutPixel(x, y, tex.GetPixel(
-				int(std::fmod(itcLine.x * tex_width, tex_clamp_x)),
-				int(std::fmod(itcLine.y * tex_height, tex_clamp_y))));
+				int(std::fmod(std::max(itcLine.x * tex_width, 0.0f), tex_clamp_x)),
+				int(std::fmod(std::max(itcLine.y * tex_height,0.0f), tex_clamp_y))));
+				//int(std::min(std::max(itcLine.x * tex_width, 0.0f), tex_clamp_x)),
+				//int(std::min(std::max(itcLine.y * tex_height, 0.0f), tex_clamp_y))));
 			// need std::min b/c tc.x/y == 1.0, we'll read off edge of tex
 			// and with fp err, tc.x/y can be > 1.0 (by a tiny amount)
 		}
