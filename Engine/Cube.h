@@ -19,14 +19,14 @@ public:
 		vertices.emplace_back( -side, side,-side  );
 		vertices.emplace_back( -side,-side, side  );
 		vertices.emplace_back( -side,-side,-side  );
-		tc.emplace_back(0.0f, 0.0f);
-		tc.emplace_back(1.0f, 0.0f);
-		tc.emplace_back(0.0f, 1.0f);
-		tc.emplace_back(1.0f, 1.0f);
-		tc.emplace_back(1.0f, 0.0f);
-		tc.emplace_back(0.0f, 0.0f);
-		tc.emplace_back(1.0f, 1.0f);
-		tc.emplace_back(0.0f, 1.0f);
+		tc.emplace_back(0.0f, 0.0f);//0
+		tc.emplace_back(1.0f, 0.0f);//1
+		tc.emplace_back(0.0f, 1.0f);//2
+		tc.emplace_back(1.0f, 1.0f);//3
+		tc.emplace_back(1.0f, 0.0f);//4
+		tc.emplace_back(0.0f, 0.0f);//5
+		tc.emplace_back(1.0f, 1.0f);//6
+		tc.emplace_back(0.0f, 1.0f);//7
 
 		normals_axes.emplace_back( Vec3{  side,	 0,		 0	  }, Vec3{  side*2.5f,	 0,			 0			}, Colors::Blue  ); // X-axis
 		normals_axes.emplace_back( Vec3{ -side,	 0,		 0	  }, Vec3{ -side*1.5f,	 0,			 0			}, Colors::LightGray ); // left

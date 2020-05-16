@@ -134,6 +134,8 @@ private:
 	float offset_z = 1.0f;
 	Mat3 R_main = Mat3::RotationBirdEye();
 	Cube cube = Cube(0.5f);
-	//Surface sbTex = Surface::FromFile( L"Images\\sauron-bhole-100x100.png");
-	Surface sbTex = Surface::FromFile(L"Images\\eye.bmp");
+	
+	//Surface sbTex = Surface::FromFile(L"Images\\eye.bmp");
+	//Surface sbTex = Surface::FromFile(L"Images\\link90x90.bmp");
+	Surface sbTex = Surface::FromFile(L"Images\\ArrowL.bmp");
 };

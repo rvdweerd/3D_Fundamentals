@@ -17,6 +17,33 @@ public:
 			tc.InterpolateTo ( dest.tc, alpha)
 		};
 	}
+	TexVertex operator-(const TexVertex& rhs) const
+	{
+		return {
+			pos - rhs.pos,
+			tc - rhs.tc
+		};
+	}
+	TexVertex operator/(const float k) const
+	{
+		return {
+			pos / k,
+			tc / k
+		};
+	}
+	TexVertex operator*(const float k) const
+	{
+		return {
+			pos * k,
+			tc * k
+		};
+	}
+	TexVertex& operator+=(const TexVertex& rhs)
+	{
+		pos += rhs.pos;
+		tc += rhs.tc;
+		return *this;
+	}
 	Vec3 pos;
 	Vec2 tc;
 };
