@@ -131,9 +131,9 @@ private:
 	float Dtheta_x = 0.0f;
 	float Dtheta_y = 0.0f;
 	float Dtheta_z = 0.0f;
-	float offset_z = 1.0f;
+	float offset_z = 5.0f;
 	Mat3 R_main = Mat3::RotationBirdEye();
-	Cube cube = Cube(0.5f);
+	Cube cube = Cube(1.0f);
 	
 	//Surface sbTex = Surface::FromFile(L"Images\\eye.bmp");
 	//Surface sbTex = Surface::FromFile(L"Images\\link90x90.bmp");
