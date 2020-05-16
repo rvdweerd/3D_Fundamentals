@@ -135,7 +135,8 @@ private:
 	Mat3 R_main = Mat3::RotationBirdEye();
 	CubeWithSkin cube = CubeWithSkin(1.0f);
 
-	Surface sbTex = Surface::FromFile(L"Images\\eye.bmp");
+	//Surface sbTex = Surface::FromFile(L"Images\\eye.bmp");
 	//Surface sbTex = Surface::FromFile(L"Images\\link90x90.bmp");
 	//Surface sbTex = Surface::FromFile(L"Images\\skin.bmp");
+	Surface sbTex = Surface::FromFile(L"Images\\dice.bmp");
 };

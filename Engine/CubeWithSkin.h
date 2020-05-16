@@ -14,8 +14,8 @@ public:
 		const float texDim = 1.0f; // used for texture wrapping
 		const float side = size / 2.0f;
 
-		vertices.emplace_back(-side, +side, -side); // #2
 		vertices.emplace_back(-side, -side, -side);	// #0
+		vertices.emplace_back(+side, -side, -side);	// #1
 		vertices.emplace_back(-side, +side, -side); // #2		
 		vertices.emplace_back(+side, +side, -side);	// #3
 		vertices.emplace_back(+side, -side, -side);	// #1
@@ -29,8 +29,8 @@ public:
 		vertices.emplace_back(-side, +side, -side);	// #2
 		vertices.emplace_back(-side, -side, -side);	// #0
 		
-		tc.emplace_back(0.0f, 1.0f);				// (0,1)
-		tc.emplace_back(0.0f, 2.0f);				// (0,2)	
+		tc.emplace_back(0.0f, 0.0f);				// (0,0)
+		tc.emplace_back(0.0f, 1.0f);				// (0,1)	
 		tc.emplace_back(1.0f, 0.0f);				// (1,0)
 		tc.emplace_back(1.0f, 1.0f);				// (1,1)
 		tc.emplace_back(1.0f, 2.0f);				// (1,2)
@@ -69,7 +69,7 @@ public:
 				2 ,6 ,7 , 	 7, 3, 2,	// top (Y-axis)
 				4 ,8 ,9 ,	 9, 5, 4,	// bottom
 				7 ,10,11,	11, 8, 7,	// back (Z-axis)
-				0 ,3 ,4 ,	 4, 1, 0,	// front
+				2,3,1,   1,0,2	// front
 			},
 			normals_axes
 		};
@@ -77,12 +77,12 @@ public:
 	IndexedTriangleList<TexVertex> GetTrianglesTex() const
 	{
 		auto adjust = [](Vec2 v)->Vec2 {return { v.x /4.0f , v.y / 3.0f  }; };
-		auto adjust2 = [](Vec2 v)->Vec2 {return { v.x , v.y -1 }; };
+		auto adjust2 = [](Vec2 v)->Vec2 {return { (v.x) , (v.y) }; };
 		std::vector<TexVertex> tverts;
 		tverts.reserve(vertices.size());
 		for (size_t i = 0; i < vertices.size(); i++)
 		{
-			tverts.emplace_back(vertices[i], adjust2(tc[i]));
+			tverts.emplace_back(vertices[i], adjust(tc[i]));
 		}
 		return {
 			std::move(tverts),
@@ -92,7 +92,7 @@ public:
 				2 ,6 ,7 , 	 7, 3, 2,	// top (Y-axis)
 				4 ,8 ,9 ,	 9, 5, 4,	// bottom
 				7 ,10,11,	11, 8, 7,	// back (Z-axis)
-				0 ,3 ,4 ,	 4, 1, 0,	// front
+				2,3,1,   1,0,2	// front
 			},
 			normals_axes
 		};
