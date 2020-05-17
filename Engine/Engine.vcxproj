@@ -155,6 +155,7 @@
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="PubeScreenTransformer.h" />
     <ClInclude Include="Pyramid.h" />
+    <ClInclude Include="PyramidWithSkin.h" />
     <ClInclude Include="Rect.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Scene.h" />
@@ -164,6 +165,7 @@
     <ClInclude Include="Teapot.h" />
     <ClInclude Include="TexCubeScene.h" />
     <ClInclude Include="TexSkinCubeScene.h" />
+    <ClInclude Include="TexSkinPyramidScene.h" />
     <ClInclude Include="TexVertex.h" />
     <ClInclude Include="Vec2.h" />
     <ClInclude Include="Vec3.h" />

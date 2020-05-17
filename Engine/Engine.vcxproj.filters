@@ -111,6 +111,12 @@
     <ClInclude Include="TexSkinCubeScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TexSkinPyramidScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PyramidWithSkin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXErr.cpp">

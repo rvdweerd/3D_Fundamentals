@@ -76,13 +76,13 @@ public:
 	}
 	IndexedTriangleList<TexVertex> GetTrianglesTex() const
 	{
-		auto adjust = [](Vec2 v)->Vec2 {return { v.x /4.0f , v.y / 3.0f  }; };
-		auto adjust2 = [](Vec2 v)->Vec2 {return { (v.x) , (v.y) }; };
+		auto applySkinSurface = [](Vec2 v)->Vec2 {return { v.x /4.0f , v.y / 3.0f  }; };
+		auto applySurfaceTiles = [](Vec2 v, float k=1.0f)->Vec2 {return { (v.x)*k , (v.y)*k }; };
 		std::vector<TexVertex> tverts;
 		tverts.reserve(vertices.size());
 		for (size_t i = 0; i < vertices.size(); i++)
 		{
-			tverts.emplace_back(vertices[i], adjust(tc[i]));
+			tverts.emplace_back(vertices[i], applySurfaceTiles(tc[i]));
 		}
 		return {
 			std::move(tverts),
