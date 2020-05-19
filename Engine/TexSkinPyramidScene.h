@@ -127,16 +127,16 @@ public:
 		size_t nLinePoints = lines.indices.size();
 		for (size_t i = 0, end = nLinePoints - 2; i <= end; i += 2)
 		{
-			//gfx.DrawLine(triangles.vertices[lines.indices[i]].pos, triangles.vertices[lines.indices[i + 1]].pos, Colors::White);
+			gfx.DrawLine(triangles.vertices[lines.indices[i]].pos, triangles.vertices[lines.indices[i + 1]].pos, Colors::Gray);
 		}
 		// Overdraw front facing edges
 		for (size_t i = 0, end = triangles.indices.size() / 3; i < end; i++)
 		{
 			if (triangles.cullFlags[i])
 			{
-				gfx.DrawLine(triangles.vertices[triangles.indices[i * 3]].pos, triangles.vertices[triangles.indices[i * 3 + 1]].pos, Colors::Gray);
-				gfx.DrawLine(triangles.vertices[triangles.indices[i * 3 + 1]].pos, triangles.vertices[triangles.indices[i * 3 + 2]].pos, Colors::Gray);
-				gfx.DrawLine(triangles.vertices[triangles.indices[i * 3]].pos, triangles.vertices[triangles.indices[i * 3 + 2]].pos, Colors::Gray);
+				gfx.DrawLine(triangles.vertices[triangles.indices[i * 3]].pos, triangles.vertices[triangles.indices[i * 3 + 1]].pos, Colors::White);
+				gfx.DrawLine(triangles.vertices[triangles.indices[i * 3 + 1]].pos, triangles.vertices[triangles.indices[i * 3 + 2]].pos, Colors::White);
+				gfx.DrawLine(triangles.vertices[triangles.indices[i * 3]].pos, triangles.vertices[triangles.indices[i * 3 + 2]].pos, Colors::White);
 			}
 		}
 		// Draw axes & normals
