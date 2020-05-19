@@ -80,9 +80,6 @@ public:
 			normals_axes
 		};
 	}
-
-
-
 private:
 	std::vector<Vec3> vertices;
 	std::vector<Vec2> tc;
