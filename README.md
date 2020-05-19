@@ -6,5 +6,5 @@ Following Chili tutorials 3d Fundamentals
 Stage: Backface culling, independent rotations
 ![cube demo](cube.gif)
 
-Stage: Texture mapping (clamped, wrapped)
+Stage: Texture mapping (with clamping, wrapping of textures)
 ![pyramid demo](pyramid_wood.gif)
