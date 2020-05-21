@@ -154,12 +154,14 @@
     <ClInclude Include="Mat2.h" />
     <ClInclude Include="Mat3.h" />
     <ClInclude Include="Mouse.h" />
+    <ClInclude Include="Pipeline.h" />
     <ClInclude Include="PubeScreenTransformer.h" />
     <ClInclude Include="Pyramid.h" />
     <ClInclude Include="PyramidWithSkin.h" />
     <ClInclude Include="Rect.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneCubeSkin.h" />
     <ClInclude Include="SolidCubeScene.h" />
     <ClInclude Include="SolidPyramidScene.h" />
     <ClInclude Include="Surface.h" />
@@ -168,6 +170,7 @@
     <ClInclude Include="TexSkinCubeScene.h" />
     <ClInclude Include="TexSkinPyramidScene.h" />
     <ClInclude Include="TexVertex.h" />
+    <ClInclude Include="Triangle.h" />
     <ClInclude Include="Vec2.h" />
     <ClInclude Include="Vec3.h" />
   </ItemGroup>

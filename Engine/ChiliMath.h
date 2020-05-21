@@ -39,3 +39,9 @@ inline T wrap_angle( T theta )
 		(modded - (T)2.0 * (T)PI_D) :
 		modded;
 }
+
+template<typename T>
+inline T interpolate(const T& from, const T& to, float alpha)
+{
+	return {from + (to-from)*alpha};
+}

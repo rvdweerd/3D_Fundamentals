@@ -22,21 +22,18 @@
 #include "Game.h"
 #include "Mat3.h"
 #include <set>
-#include "SolidCubeScene.h"
-#include "SolidPyramidScene.h"
-#include "TexCubeScene.h"
-#include "TexSkinCubeScene.h"
-#include "TexSkinPyramidScene.h"
+#include "SceneCubeSkin.h"
+
 
 Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd )
 {
-	scenes.push_back(std::make_unique<SolidCubeScene>());
-	scenes.push_back(std::make_unique<SolidPyramidScene>());
-	scenes.push_back(std::make_unique<TexSkinCubeScene>());
-	scenes.push_back(std::make_unique<TexSkinPyramidScene>());
+	//scenes.push_back(std::make_unique<SolidCubeScene>());
+	//scenes.push_back(std::make_unique<SolidPyramidScene>());
+	//scenes.push_back(std::make_unique<TexSkinCubeScene>());
+	scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, L"Images\\ArrowL.bmp"));
 	currentScene = scenes.begin();
 }
 
@@ -78,7 +75,7 @@ void Game::CycleScenes()
 	
 void Game::ComposeFrame()
 {
-	(*currentScene)->Draw(gfx);
+	(*currentScene)->Draw();
 }
 			
 
