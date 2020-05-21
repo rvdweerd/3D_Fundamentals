@@ -27,6 +27,7 @@
 #include "TexCubeScene.h"
 #include "TexSkinCubeScene.h"
 #include "TexSkinPyramidScene.h"
+
 Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
@@ -49,7 +50,7 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
-	const float dt = 4.0f / 60.0f;
+	const float dt = ft.Mark();
 	while (!wnd.kbd.KeyIsEmpty())
 	{
 		const auto e = wnd.kbd.ReadKey();

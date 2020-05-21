@@ -22,6 +22,7 @@
 
 #include "Graphics.h"
 #include "Scene.h"
+#include "FrameTimer.h"
 //#include "PubeScreenTransformer.h"
 //#include "Cube.h"
 //#include "Teapot.h"
@@ -44,6 +45,7 @@ private:
 private:
 	MainWindow& wnd;
 	Graphics gfx;
+	FrameTimer ft;
 	/********************************/
 	/*  User Variables              */
 	//Teapot teapot;

@@ -147,7 +147,7 @@ public:
 	}
 private:
 	PubeScreenTransformer pst;
-	static constexpr float AngVel = (float)PI / 14;
+	static constexpr float AngVel = (float)PI / 2; // rotation speed in radians/second
 	float Dtheta_x = 0.0f;
 	float Dtheta_y = 0.0f;
 	float Dtheta_z = 0.0f;
