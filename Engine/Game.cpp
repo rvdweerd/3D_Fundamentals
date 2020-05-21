@@ -33,7 +33,8 @@ Game::Game( MainWindow& wnd )
 	//scenes.push_back(std::make_unique<SolidCubeScene>());
 	//scenes.push_back(std::make_unique<SolidPyramidScene>());
 	//scenes.push_back(std::make_unique<TexSkinCubeScene>());
-	scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, L"Images\\ArrowL.bmp"));
+	scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, Colors::LightGray));
+	scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, L"Images\\skin.bmp"));
 	currentScene = scenes.begin();
 }
 

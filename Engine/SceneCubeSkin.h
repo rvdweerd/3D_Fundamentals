@@ -11,6 +11,14 @@ class SceneCubeSkin : public Scene
 public:
 	typedef Pipeline::Vertex Vertex;
 public:
+	SceneCubeSkin(Graphics& gfx, Color c)
+		:
+		itlist(Cube::GetSkinned<Vertex>()),
+		pipeline(gfx),
+		Scene("Solid color Cube")
+	{
+		pipeline.BindTexture(c);
+	}
 	SceneCubeSkin(Graphics& gfx, const std::wstring& filename)
 		:
 		itlist(Cube::GetSkinned<Vertex>()),

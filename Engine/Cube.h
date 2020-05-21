@@ -28,22 +28,35 @@ public:
 
 		const float texDim = 2.0f; // used for texture wrapping
 		
-		vertices.emplace_back(side, side, side);
-		vertices.emplace_back(side, side, -side);
-		vertices.emplace_back(side, -side, side);
-		vertices.emplace_back(side, -side, -side);
-		vertices.emplace_back(-side, side, side);
-		vertices.emplace_back(-side, side, -side);
-		vertices.emplace_back(-side, -side, side);
-		vertices.emplace_back(-side, -side, -side);
-		tc.emplace_back(ConvertTexCoord(0.0f,   0.0f));		//0
-		tc.emplace_back(ConvertTexCoord(texDim, 0.0f));		//1
-		tc.emplace_back(ConvertTexCoord(0.0f,   texDim));	//2
-		tc.emplace_back(ConvertTexCoord(texDim, texDim));	//3
-		tc.emplace_back(ConvertTexCoord(texDim, 0.0f));		//4
-		tc.emplace_back(ConvertTexCoord(0.0f,   0.0f));		//5
-		tc.emplace_back(ConvertTexCoord(texDim, texDim));	//6
-		tc.emplace_back(ConvertTexCoord(0.0f,   texDim));	//7
+		vertices.emplace_back(-side, -side, -side);	// #0
+		vertices.emplace_back(+side, -side, -side);	// #1
+		vertices.emplace_back(-side, +side, -side); // #2		
+		vertices.emplace_back(+side, +side, -side);	// #3
+		vertices.emplace_back(+side, -side, -side);	// #1
+		vertices.emplace_back(-side, -side, -side);	// #0
+		vertices.emplace_back(-side, +side, +side);	// #6
+		vertices.emplace_back(+side, +side, +side);	// #7
+		vertices.emplace_back(+side, -side, +side);	// #5
+		vertices.emplace_back(-side, -side, +side);	// #4
+		vertices.emplace_back(-side, +side, +side);	// #6
+		vertices.emplace_back(-side, -side, +side);	// #4
+		vertices.emplace_back(-side, +side, -side);	// #2
+		vertices.emplace_back(-side, -side, -side);	// #0
+		
+		tc.emplace_back(ConvertTexCoord(0.0f, 0.0f));	// (0,0)
+		tc.emplace_back(ConvertTexCoord(0.0f, 1.0f));	// (0,1)	
+		tc.emplace_back(ConvertTexCoord(1.0f, 0.0f));	// (1,0)
+		tc.emplace_back(ConvertTexCoord(1.0f, 1.0f));	// (1,1)
+		tc.emplace_back(ConvertTexCoord(1.0f, 2.0f));	// (1,2)
+		tc.emplace_back(ConvertTexCoord(1.0f, 3.0f));	// (1,3)
+		tc.emplace_back(ConvertTexCoord(2.0f, 0.0f));	// (2,0)
+		tc.emplace_back(ConvertTexCoord(2.0f, 1.0f));	// (2,1)
+		tc.emplace_back(ConvertTexCoord(2.0f, 2.0f));	// (2,2)
+		tc.emplace_back(ConvertTexCoord(2.0f, 3.0f));	// (2,3)
+		tc.emplace_back(ConvertTexCoord(3.0f, 1.0f));	// (3,1)
+		tc.emplace_back(ConvertTexCoord(3.0f, 2.0f));	// (3,2)
+		tc.emplace_back(ConvertTexCoord(4.0f, 1.0f));	// (4,1)
+		tc.emplace_back(ConvertTexCoord(4.0f, 2.0f));	// (4,2)
 
 		normals_axes.emplace_back(Vec3{ side,	 0,		 0 }, Vec3{ side*2.5f ,	 0,			 0 }, Colors::Blue); // X-axis
 		normals_axes.emplace_back(Vec3{ -side,	 0,		 0 }, Vec3{ -side * 1.5f ,	 0,			 0 }, Colors::LightGray); // left
@@ -60,15 +73,21 @@ public:
 		}
 
 		return{
-			std::move(verts),{
-				1,0,2,  2,3,1, // right (X-axis)
-				4,5,7,  7,6,4, // left
-				1,5,4,  4,0,1, // top (Y-axis)
-				6,7,3,  3,2,6, // bottom
-				0,4,6,  6,2,0, // back (Z-axis)
-				3,7,5,  5,1,3, // front
+			std::move(verts),
+			{	// Ordered triangle indices
+				 3, 7, 8,	 8, 4, 3,	// right (X-axis)
+				10,12,13,	13,11,10,	// left
+				 2, 6, 7, 	 7, 3, 2,	// top (Y-axis)
+				 4, 8, 9,	 9, 5, 4,	// bottom
+				 7,10,11,	11, 8, 7,	// back (Z-axis)
+				 2, 3, 1,    1, 0, 2	// front
 			},
-			normals_axes
+			normals_axes,
+			{	// Ordered side indiced
+				3,7,	7,8,	8,4,	4,3,
+				10,12,  12,13,  13,11,  11,10,
+				0,4,    1,3,	7,10,	8,11
+			}
 		};
 	}
 };

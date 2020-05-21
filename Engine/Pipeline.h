@@ -70,7 +70,7 @@ public:
 	{}
 	void Draw(IndexedTriangleList<Vertex>& triList)
 	{
-		ProcessVertices(triList.vertices, triList.indices);
+		ProcessVertices(triList.vertices, triList.indices, triList.sides);
 		ProcessAxes(triList.normals_axes);
 	}
 	void BindRotation(const Mat3& rotation_in)
@@ -85,7 +85,36 @@ public:
 	{
 		pTex = std::make_unique<Surface>(Surface::FromFile(filename));
 	}
+	void BindTexture(const Color c)
+	{
+		pTex = std::make_unique<Surface>(2,2);
+		pTex->Clear(c);
+	}
 private:
+	void ProcessVertices(const std::vector<Vertex>& vertices, const std::vector<size_t>& indices, const std::vector<size_t>& sides)
+	{
+		// create vertex vector for vs output
+		std::vector<Vertex> verticesOut;
+
+		// transform vertices using matrix + vector
+		for (const auto& v : vertices)
+		{
+			verticesOut.emplace_back(v.pos * rotation + translation, v.tc);
+		}
+		
+		// assemble triangles from stream of indices and vertices
+		AssembleTriangles(verticesOut, indices);
+		ProcessSidesWireFrame(verticesOut, sides);
+	}
+	void ProcessSidesWireFrame(const std::vector<Vertex>& vertices, const std::vector<size_t>& sides)
+	{
+		size_t nLinePoints = sides.size();
+		for (size_t i = 0, end = nLinePoints - 2; i <= end; i += 2)
+		{
+			gfx.DrawLine(pst.GetTransformed(vertices[sides[i]].pos,true), pst.GetTransformed(vertices[sides[i + 1]].pos,true), Colors::White);
+		}
+
+	}
 	void ProcessAxes(const std::vector<Axis>& normals_axes)
 	{
 		std::vector<Axis> axesOut;
@@ -102,20 +131,6 @@ private:
 			gfx.DrawLine(p0, p1, a.col);
 		}
 	}
-	void ProcessVertices(const std::vector<Vertex>& vertices, const std::vector<size_t>& indices)
-	{
-		// create vertex vector for vs output
-		std::vector<Vertex> verticesOut;
-
-		// transform vertices using matrix + vector
-		for (const auto& v : vertices)
-		{
-			verticesOut.emplace_back(v.pos * rotation + translation, v.tc);
-		}
-		
-		// assemble triangles from stream of indices and vertices
-		AssembleTriangles(verticesOut, indices);
-	}
 	void AssembleTriangles(const std::vector<Vertex>& vertices, const std::vector<size_t>& indices)
 	{
 		// assemble triangles in the stream and process
@@ -128,7 +143,6 @@ private:
 			const auto& v2 = vertices[indices[i * 3 + 2]];
 			// cull backfacing triangles with cross product (%) shenanigans
 			if ((v1.pos - v0.pos) % (v2.pos - v0.pos) * v0.pos <= 0.0f)
-
 			{
 				// process 3 vertices into a triangle
 				ProcessTriangle(v0, v1, v2);
@@ -148,6 +162,13 @@ private:
 
 		// draw the triangle
 		DrawTriangle(triangle);
+		DrawTriangleEdges(triangle);
+	}
+	void DrawTriangleEdges(const Triangle<Vertex>& triangle)
+	{
+		gfx.DrawLine(triangle.v0.pos, triangle.v1.pos, Colors::Gray);
+		gfx.DrawLine(triangle.v1.pos, triangle.v2.pos, Colors::Gray);
+		gfx.DrawLine(triangle.v0.pos, triangle.v2.pos, Colors::Gray);
 	}
 	void DrawTriangle(const Triangle<Vertex>& triangle)
 	{

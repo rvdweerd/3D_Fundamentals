@@ -18,11 +18,12 @@ struct Axis
 template <class T>
 struct IndexedTriangleList
 {
-	IndexedTriangleList(std::vector<T> verts_in, std::vector<size_t> ind_in, std::vector<Axis> axs_in)
+	IndexedTriangleList(std::vector<T> verts_in, std::vector<size_t> ind_in, std::vector<Axis> axs_in, std::vector<size_t> sides_in)
 		:
 		vertices(std::move(verts_in)),
 		indices(std::move(ind_in)),
-		normals_axes(axs_in)
+		normals_axes(axs_in),
+		sides(sides_in)
 	{
 		assert(vertices.size() > 2);
 		assert(indices.size() % 3 == 0);
@@ -30,4 +31,5 @@ struct IndexedTriangleList
 	std::vector<T> vertices;
 	std::vector<size_t> indices;
 	std::vector<Axis> normals_axes;
+	std::vector<size_t> sides;
 };
