@@ -4,29 +4,30 @@
 #include "Cube.h"
 #include "Mat3.h"
 #include "Pipeline.h"
+#include "VertexColorEffect.h"
 
 // scene demonstrating skinned cube
-class SceneCubeSkin : public Scene
+class SceneCubeVertexColor : public Scene
 {
 public:
-	typedef Pipeline<TextureEffect> Pipeline;
+	typedef Pipeline<VertexColorEffect> Pipeline;
 	typedef Pipeline::Vertex Vertex;
 public:
-	SceneCubeSkin(Graphics& gfx, Color c)
+	SceneCubeVertexColor(Graphics& gfx)
 		:
-		itlist(Cube::GetSkinned<Vertex>()),
+		itlist(Cube::GetPlain<Vertex>()),
 		pipeline(gfx),
-		Scene(L"Solid color Cube")
+		Scene(L"Vertex color Cube")
 	{
-		pipeline.effect.ps.BindTexture(c);
-	}
-	SceneCubeSkin(Graphics& gfx, const std::wstring& filename)
-		:
-		itlist(Cube::GetSkinned<Vertex>()),
-		pipeline(gfx),
-		Scene(L"Textured Cube skinned using texture: " + std::wstring(filename.begin(), filename.end()))
-	{
-		pipeline.effect.ps.BindTexture(filename);
+		itlist.sides.clear();
+		itlist.vertices[0].color = Vec3(Colors::Red);
+		itlist.vertices[1].color = Vec3(Colors::Green);
+		itlist.vertices[2].color = Vec3(Colors::Blue);
+		itlist.vertices[3].color = Vec3(Colors::Yellow);
+		itlist.vertices[4].color = Vec3(Colors::Cyan);
+		itlist.vertices[5].color = Vec3(Colors::Magenta);
+		itlist.vertices[6].color = Vec3(Colors::White);
+		itlist.vertices[7].color = Vec3(Colors::Black);
 	}
 	virtual void Update(Keyboard& kbd, Mouse& mouse, float dt) override
 	{
@@ -84,7 +85,7 @@ public:
 private:
 	IndexedTriangleList<Vertex> itlist;  // { Vector<Vertex> verts, Vector<size_t> indices, Vector<Axis> normal_axes} verts: in object space (from definition)
 	Pipeline pipeline;
-	static constexpr float angVel = PI/2;
+	static constexpr float angVel = PI / 2;
 	static constexpr float zVel = 2.0f;
 	float offset_z = 5.0f;
 	float Dtheta_x = 0.0f;

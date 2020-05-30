@@ -1,13 +1,59 @@
 #pragma once
 #include "Vec3.h"
 #include <vector>
-
 #include "IndexedTriangleList.h"
 //#include "TexVertex.h"
 
 class Cube
 {
 public:
+	template<class V>
+	static IndexedTriangleList<V> GetPlain(float size = 1.0f)
+	{
+		const float side = size / 2.0f;
+		std::vector<Vec3> vertices;
+		std::vector<Axis> normals_axes;
+		vertices.emplace_back(-side, -side, -side);	// #0
+		vertices.emplace_back(+side, -side, -side);	// #1
+		vertices.emplace_back(-side, +side, -side); // #2		
+		vertices.emplace_back(+side, +side, -side);	// #3
+		vertices.emplace_back(-side, -side, +side);	// #4
+		vertices.emplace_back(+side, -side, +side);	// #5
+		vertices.emplace_back(-side, +side, +side);	// #6
+		vertices.emplace_back(+side, +side, +side);	// #7
+		
+		//normals_axes.emplace_back(Vec3{ side,	 0,		 0 }, Vec3{ side * 2.5f ,	 0,			 0 }, Colors::Blue); // X-axis
+		//normals_axes.emplace_back(Vec3{ -side,	 0,		 0 }, Vec3{ -side * 1.5f ,	 0,			 0 }, Colors::LightGray); // left
+		//normals_axes.emplace_back(Vec3{ 0,		 side,	 0 }, Vec3{ 0,			 side * 2.5f ,	 0 }, Colors::Green); // Y-axis
+		//normals_axes.emplace_back(Vec3{ 0,		-side,	 0 }, Vec3{ 0,			-side * 1.5f ,	 0 }, Colors::LightGray); // bottom
+		//normals_axes.emplace_back(Vec3{ 0,		 0,		 side }, Vec3{ 0,			 0,			 side * 2.5f }, Colors::Red); // Z-axis
+		//normals_axes.emplace_back(Vec3{ 0,		 0,		-side }, Vec3{ 0,			 0,			-side * 1.5f }, Colors::LightGray); // front
+		
+		std::vector<V> verts(vertices.size());
+		for (size_t i = 0; i < vertices.size(); i++)
+		{
+			verts[i].pos = vertices[i];
+		}
+
+		return{
+			std::move(verts),
+			{	// Ordered triangle indices
+				 3, 7, 5,	 5, 1, 3,	// right (X-axis)
+				 6, 2, 0,	 0, 4, 6,	// left
+				 2, 6, 7, 	 7, 3, 2,	// top (Y-axis)
+				 1, 5, 4,	 4, 0, 1,	// bottom
+				 7, 6, 4,	 4, 5, 7,	// back (Z-axis)
+				 2, 3, 1,    1, 0, 2	// front
+			},
+			normals_axes,
+			{	// Ordered side indices
+				3,7,	7,5,	5,1,	1,3,
+				6,2,    2,0,    0,4,    4,6,
+				2,3,    6,7,	4,5,	0,1
+			}
+		};
+
+	}
 	template<class V>
 	static IndexedTriangleList<V> GetSkinned(float size = 1.0f)
 	{

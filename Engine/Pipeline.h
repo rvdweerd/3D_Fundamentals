@@ -7,63 +7,13 @@
 #include <Vector>
 #include "Triangle.h"
 #include "IndexedTriangleList.h"
+#include "TextureEffect.h"
 
+template<class Effect>
 class Pipeline
 {
 public:
-	class Vertex
-	{
-	public:
-		Vertex() = default;
-		Vertex(const Vec3& pos, const Vec2& tc)
-			:
-			pos(pos),
-			tc(tc)
-		{}
-		Vertex InterpolateTo(const Vertex& dest, float alpha) const
-		{
-			return {
-				pos.InterpolateTo(dest.pos,alpha),
-				tc.InterpolateTo(dest.tc, alpha)
-			};
-		}
-		Vertex operator-(const Vertex& rhs) const
-		{
-			return {
-				pos - rhs.pos,
-				tc - rhs.tc
-			};
-		}
-		Vertex operator+(const Vertex& rhs) const
-		{
-			return {
-				pos + rhs.pos,
-				tc + rhs.tc
-			};
-		}
-		Vertex operator/(const float k) const
-		{
-			return {
-				pos / k,
-				tc / k
-			};
-		}
-		Vertex operator*(const float k) const
-		{
-			return {
-				pos * k,
-				tc * k
-			};
-		}
-		Vertex& operator+=(const Vertex& rhs)
-		{
-			pos += rhs.pos;
-			tc += rhs.tc;
-			return *this;
-		}
-		Vec3 pos;
-		Vec2 tc;
-	};
+	typedef typename Effect::Vertex Vertex;
 	Pipeline(Graphics& gfx)
 		:
 		gfx(gfx)
@@ -81,15 +31,6 @@ public:
 	{
 		translation = translation_in;
 	}
-	void BindTexture(const std::wstring& filename)
-	{
-		pTex = std::make_unique<Surface>(Surface::FromFile(filename));
-	}
-	void BindTexture(const Color c)
-	{
-		pTex = std::make_unique<Surface>(2,2);
-		pTex->Clear(c);
-	}
 private:
 	void ProcessVertices(const std::vector<Vertex>& vertices, const std::vector<size_t>& indices, const std::vector<size_t>& sides)
 	{
@@ -99,7 +40,7 @@ private:
 		// transform vertices using matrix + vector
 		for (const auto& v : vertices)
 		{
-			verticesOut.emplace_back(v.pos * rotation + translation, v.tc);
+			verticesOut.emplace_back(v.pos * rotation + translation, v);
 		}
 		
 		// assemble triangles from stream of indices and vertices
@@ -108,27 +49,32 @@ private:
 	}
 	void ProcessSidesWireFrame(const std::vector<Vertex>& vertices, const std::vector<size_t>& sides)
 	{
-		size_t nLinePoints = sides.size();
-		for (size_t i = 0, end = nLinePoints - 2; i <= end; i += 2)
+		if (sides.size() > 0)
 		{
-			gfx.DrawLine(pst.GetTransformed(vertices[sides[i]].pos,true), pst.GetTransformed(vertices[sides[i + 1]].pos,true), Colors::White);
+			size_t nLinePoints = sides.size();
+			for (size_t i = 0, end = nLinePoints - 2; i <= end; i += 2)
+			{
+				gfx.DrawLine(pst.GetTransformed(vertices[sides[i]].pos, true), pst.GetTransformed(vertices[sides[i + 1]].pos, true), Colors::White);
+			}
 		}
-
 	}
 	void ProcessAxes(const std::vector<Axis>& normals_axes)
 	{
-		std::vector<Axis> axesOut;
-
-		for (const auto& a : normals_axes)
+		if (normals_axes.size() > 0)
 		{
-			axesOut.emplace_back(a.p0 * rotation + translation, a.p1 * rotation + translation, a.col);
-		}
-		for (auto& a : axesOut)
-		{
-			Vec2 p0 = pst.GetTransformed(a.p0, true);
-			Vec2 p1 = pst.GetTransformed(a.p1, true);
+			std::vector<Axis> axesOut;
 
-			gfx.DrawLine(p0, p1, a.col);
+			for (const auto& a : normals_axes)
+			{
+				axesOut.emplace_back(a.p0 * rotation + translation, a.p1 * rotation + translation, a.col);
+			}
+			for (auto& a : axesOut)
+			{
+				Vec2 p0 = pst.GetTransformed(a.p0, true);
+				Vec2 p1 = pst.GetTransformed(a.p1, true);
+
+				gfx.DrawLine(p0, p1, a.col);
+			}
 		}
 	}
 	void AssembleTriangles(const std::vector<Vertex>& vertices, const std::vector<size_t>& indices)
@@ -266,12 +212,6 @@ private:
 		itEdge0 += dv0 * (float(yStart) + 0.5f - it0.pos.y);
 		itEdge1 += dv1 * (float(yStart) + 0.5f - it0.pos.y);
 
-		// prepare clamping constants
-		const float tex_width = float(pTex->GetWidth());
-		const float tex_height = float(pTex->GetHeight());
-		const float tex_xclamp = tex_width - 1.0f;
-		const float tex_yclamp = tex_height - 1.0f;
-
 		for (int y = yStart; y < yEnd; y++, itEdge0 += dv0, itEdge1 += dv1)
 		{
 			// calculate start and end pixels
@@ -293,14 +233,7 @@ private:
 			for (int x = xStart; x < xEnd; x++, iLine += diLine)
 			{
 				// perform texture lookup, clamp, and write pixel
-				gfx.PutPixel(x, y, pTex->GetPixel(
-					//(unsigned int)std::min(iLine.t.x * tex_width + 0.5f, tex_xclamp),
-					//(unsigned int)std::min(iLine.t.y * tex_height + 0.5f, tex_yclamp)
-
-					int(std::fmod(std::max(iLine.tc.x * tex_width, 0.0f), tex_xclamp)),
-					int(std::fmod(std::max(iLine.tc.y * tex_height, 0.0f), tex_yclamp))
-
-				));
+				gfx.PutPixel(x, y, effect.ps(iLine));
 			}
 		}
 	}
@@ -309,5 +242,6 @@ private:
 	PubeScreenTransformer pst;
 	Mat3 rotation;
 	Vec3 translation;
-	std::unique_ptr<Surface> pTex;
+public:
+	Effect effect;
 };

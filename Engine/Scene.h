@@ -7,17 +7,17 @@
 class Scene
 {
 public:
-	Scene(const std::string& name)
+	Scene(const std::wstring& name)
 		:
 		name(name)
 	{}
 	virtual void Update(Keyboard& kbd, Mouse& mouse, float dt) = 0;
 	virtual void Draw() = 0;
 	virtual ~Scene() = default;
-	const std::string& GetName() const
+	const std::wstring& GetName() const
 	{
 		return name;
 	}
 private:
-	std::string name;
+	std::wstring name;
 };

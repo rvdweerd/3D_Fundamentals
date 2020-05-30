@@ -162,6 +162,7 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneCubeSkin.h" />
+    <ClInclude Include="SceneCubeVertexColor.h" />
     <ClInclude Include="SolidCubeScene.h" />
     <ClInclude Include="SolidPyramidScene.h" />
     <ClInclude Include="Surface.h" />
@@ -169,10 +170,12 @@
     <ClInclude Include="TexCubeScene.h" />
     <ClInclude Include="TexSkinCubeScene.h" />
     <ClInclude Include="TexSkinPyramidScene.h" />
+    <ClInclude Include="TextureEffect.h" />
     <ClInclude Include="TexVertex.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="Vec2.h" />
     <ClInclude Include="Vec3.h" />
+    <ClInclude Include="VertexColorEffect.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXErr.cpp" />

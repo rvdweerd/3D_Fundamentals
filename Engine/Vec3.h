@@ -19,8 +19,8 @@
 *	along with The Chili DirectX Framework.  If not, see <http://www.gnu.org/licenses/>.  *
 ******************************************************************************************/
 #pragma once
-
 #include "ChiliMath.h"
+#include "Vec2.h"
 
 template <typename T>
 class _Vec3 : public _Vec2<T>

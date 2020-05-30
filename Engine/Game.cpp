@@ -23,7 +23,7 @@
 #include "Mat3.h"
 #include <set>
 #include "SceneCubeSkin.h"
-
+#include "SceneCubeVertexColor.h"
 
 Game::Game( MainWindow& wnd )
 	:
@@ -35,6 +35,7 @@ Game::Game( MainWindow& wnd )
 	//scenes.push_back(std::make_unique<TexSkinCubeScene>());
 	scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, Colors::LightGray));
 	scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, L"Images\\skin.bmp"));
+	scenes.push_back(std::make_unique<SceneCubeVertexColor>(gfx));
 	currentScene = scenes.begin();
 }
 
