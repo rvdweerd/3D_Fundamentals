@@ -7,7 +7,8 @@
 #include <Vector>
 #include "Triangle.h"
 #include "IndexedTriangleList.h"
-#include "TextureEffect.h"
+
+
 
 template<class Effect>
 class Pipeline

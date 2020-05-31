@@ -46,6 +46,7 @@ private:
 	MainWindow& wnd;
 	Graphics gfx;
 	FrameTimer ft;
+	Surface bitmapText;
 	/********************************/
 	/*  User Variables              */
 	//Teapot teapot;

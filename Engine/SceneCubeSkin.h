@@ -4,6 +4,7 @@
 #include "Cube.h"
 #include "Mat3.h"
 #include "Pipeline.h"
+#include "TextureEffect.h"
 
 // scene demonstrating skinned cube
 class SceneCubeSkin : public Scene

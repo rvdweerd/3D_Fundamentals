@@ -24,11 +24,13 @@
 #include <set>
 #include "SceneCubeSkin.h"
 #include "SceneCubeVertexColor.h"
+#include "SceneCubeSolidColors.h"
 
 Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
-	gfx( wnd )
+	gfx( wnd ),
+	bitmapText(Surface::FromFile(L"Images\\Consolas13x24.bmp"))
 {
 	//scenes.push_back(std::make_unique<SolidCubeScene>());
 	//scenes.push_back(std::make_unique<SolidPyramidScene>());
@@ -36,6 +38,8 @@ Game::Game( MainWindow& wnd )
 	scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, Colors::LightGray));
 	scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, L"Images\\skin.bmp"));
 	scenes.push_back(std::make_unique<SceneCubeVertexColor>(gfx));
+	scenes.push_back(std::make_unique<SceneCubeSolidColors>(gfx));
+
 	currentScene = scenes.begin();
 }
 
@@ -78,6 +82,7 @@ void Game::CycleScenes()
 void Game::ComposeFrame()
 {
 	(*currentScene)->Draw();
+	
 }
 			
 

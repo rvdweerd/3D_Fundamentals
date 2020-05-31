@@ -4,30 +4,27 @@
 #include "Cube.h"
 #include "Mat3.h"
 #include "Pipeline.h"
-#include "VertexColorEffect.h"
+#include "SolidEffect.h"
 
-// scene demonstrating skinned cube
-class SceneCubeVertexColor : public Scene
+// scene demonstrating solid colored cube
+class SceneCubeSolidColors : public Scene
 {
 public:
-	typedef Pipeline<VertexColorEffect> Pipeline;
+	typedef Pipeline<SolidEffect> Pipeline;
 	typedef Pipeline::Vertex Vertex;
 public:
-	SceneCubeVertexColor(Graphics& gfx)
+	SceneCubeSolidColors(Graphics& gfx)
 		:
-		itlist(Cube::GetPlain<Vertex>()),
+		itlist(Cube::GetIndependentFaces<Vertex>()),
 		pipeline(gfx),
 		Scene(L"Vertex color Cube")
 	{
 		itlist.sides.clear();
-		itlist.vertices[0].color = Vec3(Colors::Red);
-		itlist.vertices[1].color = Vec3(Colors::Green);
-		itlist.vertices[2].color = Vec3(Colors::Blue);
-		itlist.vertices[3].color = Vec3(Colors::Yellow);
-		itlist.vertices[4].color = Vec3(Colors::Cyan);
-		itlist.vertices[5].color = Vec3(Colors::Magenta);
-		itlist.vertices[6].color = Vec3(Colors::White);
-		itlist.vertices[7].color = Vec3(Colors::Black);
+		Color colarr[8] = { Colors::Red, Colors::Green, Colors::Blue, Colors::Yellow, Colors::Cyan, Colors::Magenta, Colors::White, Colors::Black };
+		for (size_t i = 0; i < 24; i++)
+		{
+			itlist.vertices[i].color = colarr[i / 4];
+		}
 	}
 	virtual void Update(Keyboard& kbd, Mouse& mouse, float dt) override
 	{

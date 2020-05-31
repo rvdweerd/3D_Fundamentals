@@ -162,6 +162,7 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneCubeSkin.h" />
+    <ClInclude Include="SceneCubeSolidColors.h" />
     <ClInclude Include="SceneCubeVertexColor.h" />
     <ClInclude Include="SolidCubeScene.h" />
     <ClInclude Include="SolidPyramidScene.h" />
@@ -186,6 +187,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="Mouse.cpp" />
+    <ClCompile Include="SolidEffect.h" />
     <ClCompile Include="Surface.cpp" />
   </ItemGroup>
   <ItemGroup>
