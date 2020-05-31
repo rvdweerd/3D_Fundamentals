@@ -23,10 +23,7 @@
 #include "Graphics.h"
 #include "Scene.h"
 #include "FrameTimer.h"
-//#include "PubeScreenTransformer.h"
-//#include "Cube.h"
-//#include "Teapot.h"
-//#include "Mat3.h"
+#include "BitmapText.h"
 
 class Game
 {
@@ -46,7 +43,7 @@ private:
 	MainWindow& wnd;
 	Graphics gfx;
 	FrameTimer ft;
-	Surface bitmapText;
+	BitmapText bmText;
 	/********************************/
 	/*  User Variables              */
 	//Teapot teapot;

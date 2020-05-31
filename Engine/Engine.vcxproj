@@ -136,6 +136,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BitmapText.h" />
     <ClInclude Include="ChiliException.h" />
     <ClInclude Include="ChiliMath.h" />
     <ClInclude Include="ChiliWin.h" />
@@ -166,6 +167,7 @@
     <ClInclude Include="SceneCubeVertexColor.h" />
     <ClInclude Include="SolidCubeScene.h" />
     <ClInclude Include="SolidPyramidScene.h" />
+    <ClInclude Include="SpriteEffect.h" />
     <ClInclude Include="Surface.h" />
     <ClInclude Include="Teapot.h" />
     <ClInclude Include="TexCubeScene.h" />
@@ -179,6 +181,7 @@
     <ClInclude Include="VertexColorEffect.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BitmapText.cpp" />
     <ClCompile Include="DXErr.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GDIPlusManager.cpp" />

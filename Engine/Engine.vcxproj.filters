@@ -153,8 +153,14 @@
     <ClInclude Include="CubeWithSkin.h">
       <Filter>Header Files\3D_shapes</Filter>
     </ClInclude>
-    <ClInclude Include="SceneCubeSolidColors.h">
+    <ClInclude Include="BitmapText.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteEffect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneCubeSolidColors.h">
+      <Filter>Header Files\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -187,6 +193,9 @@
     </ClCompile>
     <ClCompile Include="SolidEffect.h">
       <Filter>Header Files\PS_Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="BitmapText.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -30,7 +30,7 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	bitmapText(Surface::FromFile(L"Images\\Consolas13x24.bmp"))
+	bmText(gfx)
 {
 	//scenes.push_back(std::make_unique<SolidCubeScene>());
 	//scenes.push_back(std::make_unique<SolidPyramidScene>());
@@ -54,6 +54,9 @@ void Game::Go()
 void Game::UpdateModel()
 {
 	const float dt = ft.Mark();
+	bmText.DrawString(10, 10, Colors::Red, "FR: "+std::to_string(ft.GetFR()), BitmapText::Font::FixedSys16x28);
+	bmText.DrawString(10, 38, Colors::Red, "dPhi/dt (deg/s): " + std::to_string((*currentScene)->GetAngVel()*180/PI), BitmapText::Font::FixedSys16x28);
+
 	while (!wnd.kbd.KeyIsEmpty())
 	{
 		const auto e = wnd.kbd.ReadKey();
@@ -82,7 +85,6 @@ void Game::CycleScenes()
 void Game::ComposeFrame()
 {
 	(*currentScene)->Draw();
-	
 }
 			
 

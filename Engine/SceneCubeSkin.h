@@ -66,6 +66,14 @@ public:
 		{
 			offset_z -= zVel * dt;
 		}
+		if (kbd.KeyIsPressed('P'))
+		{
+			angVel += 1 * PI / 180;
+		}
+		if (kbd.KeyIsPressed('L'))
+		{
+			angVel -= 1 * PI / 180;
+		}
 		if (kbd.KeyIsPressed(VK_SPACE))
 		{
 			R_main = Mat3::Identity();
@@ -82,10 +90,14 @@ public:
 		// render triangles
 		pipeline.Draw(itlist);
 	}
+	virtual float GetAngVel() override
+	{
+		return angVel;
+	}
 private:
 	IndexedTriangleList<Vertex> itlist;  // { Vector<Vertex> verts, Vector<size_t> indices, Vector<Axis> normal_axes} verts: in object space (from definition)
 	Pipeline pipeline;
-	static constexpr float angVel = PI/2;
+	float angVel = PI/2;
 	static constexpr float zVel = 2.0f;
 	float offset_z = 5.0f;
 	float Dtheta_x = 0.0f;

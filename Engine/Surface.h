@@ -122,6 +122,10 @@ public:
 	static Surface FromFile( const std::wstring& name );
 	void Save( const std::wstring& filename ) const;
 	void Copy( const Surface& src );
+	RectI GetRect() const
+	{
+		return { 0,(int)height ,0,(int)width };
+	}
 private:
 	// calculate pixel pitch required for given byte aligment (must be multiple of 4 bytes)
 	static unsigned int GetPitch( unsigned int width,unsigned int byteAlignment )
