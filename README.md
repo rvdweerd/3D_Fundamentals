@@ -8,3 +8,6 @@ Stage: Backface culling, independent rotations
 
 Stage: Texture mapping (with clamping, wrapping of textures)
 ![pyramid demo](pyramid_wood.gif)
+
+Stage: Added pixel shader to the pipeline (templated function object for flexibility in rendering effects)
+![pyramid demo](VertexColorEffect.gif)
