@@ -165,6 +165,7 @@
     <ClInclude Include="SceneCubeSkin.h" />
     <ClInclude Include="SceneCubeSolidColors.h" />
     <ClInclude Include="SceneCubeVertexColor.h" />
+    <ClInclude Include="ScenePyramidSkin.h" />
     <ClInclude Include="SolidCubeScene.h" />
     <ClInclude Include="SolidPyramidScene.h" />
     <ClInclude Include="SpriteEffect.h" />

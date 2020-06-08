@@ -25,6 +25,7 @@
 #include "SceneCubeSkin.h"
 #include "SceneCubeVertexColor.h"
 #include "SceneCubeSolidColors.h"
+#include "ScenePyramidSkin.h"
 
 Game::Game( MainWindow& wnd )
 	:
@@ -35,8 +36,13 @@ Game::Game( MainWindow& wnd )
 	//scenes.push_back(std::make_unique<SolidCubeScene>());
 	//scenes.push_back(std::make_unique<SolidPyramidScene>());
 	//scenes.push_back(std::make_unique<TexSkinCubeScene>());
+	scenes.push_back(std::make_unique<ScenePyramidSkin>(gfx, L"Images\\skin_pyr.bmp"));
+	scenes.push_back(std::make_unique<ScenePyramidSkin>(gfx, L"Images\\wood256.bmp"));
 	scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, Colors::LightGray));
 	scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, L"Images\\skin.bmp"));
+	scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, L"Images\\wood256.bmp"));
+	scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, L"Images\\dice.bmp"));
+	scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, L"Images\\eye.bmp"));
 	scenes.push_back(std::make_unique<SceneCubeVertexColor>(gfx));
 	scenes.push_back(std::make_unique<SceneCubeSolidColors>(gfx));
 
@@ -54,8 +60,8 @@ void Game::Go()
 void Game::UpdateModel()
 {
 	const float dt = ft.Mark();
-	bmText.DrawString(10, 10, Colors::Red, "FR: "+std::to_string(ft.GetFR()), BitmapText::Font::FixedSys16x28);
-	bmText.DrawString(10, 38, Colors::Red, "dPhi/dt (deg/s): " + std::to_string((*currentScene)->GetAngVel()*180/PI), BitmapText::Font::FixedSys16x28);
+	bmText.DrawString(10, 10, Colors::Red, "FR: "+std::to_string(ft.GetFR()), BitmapText::Font::Consolas13x24);
+	bmText.DrawString(10, 38, Colors::Red, "dPhi/dt (deg/s): " + std::to_string((*currentScene)->GetAngVel()*180/PI), BitmapText::Font::Consolas13x24);
 
 	while (!wnd.kbd.KeyIsEmpty())
 	{

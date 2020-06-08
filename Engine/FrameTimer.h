@@ -17,7 +17,7 @@ public:
 
 		timer += (float)frameTime.count();
 		cycles += 1;
-		if (timer > 1.0f)
+		if (timer > 0.25f)
 		{
 			avgFR = cycles / timer;
 			timer = 0.0f;

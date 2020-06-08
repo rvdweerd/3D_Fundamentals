@@ -12,7 +12,7 @@ public:
 	{
 		FixedSys16x28=0,
 		//FixedSys8x14,
-		//Consolas13x24,
+		Consolas13x24,
 		//Consolas6x12BROKEN,
 		Count
 	};
@@ -26,8 +26,8 @@ public:
 public:
 	Graphics& gfx;
 	std::vector<Surface> fontSpriteSheets;
-	std::vector<std::wstring> fontFiles = { L"Images\\FixedSys16x28.bmp" };
-	std::vector<Vei2> fontSizes = { {16,28} };
+	std::vector<std::wstring> fontFiles = { L"Images\\FixedSys16x28.bmp" , L"Images\\Consolas13x24.bmp"};
+	std::vector<Vei2> fontSizes = { {16,28} , {13,24}  };
 
 
 };

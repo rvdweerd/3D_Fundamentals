@@ -122,8 +122,6 @@ public:
 		};
 
 	}
-
-	
 	template<class V>
 	static IndexedTriangleList<V> GetSkinned(float size = 1.0f)
 	{
