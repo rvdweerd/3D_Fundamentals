@@ -56,6 +56,12 @@ public:
 				tc * k
 			};
 		}
+		Vertex& operator*=(const float rhs)
+		{
+			pos *= rhs;
+			tc *= rhs;
+			return *this;
+		}
 		Vertex& operator+=(const Vertex& rhs)
 		{
 			pos += rhs.pos;

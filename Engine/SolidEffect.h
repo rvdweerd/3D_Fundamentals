@@ -55,6 +55,13 @@ public:
 				color
 			};
 		}
+		Vertex& operator*=(const float rhs)
+		{
+			pos *= rhs;
+			//color *= rhs;
+			return *this;
+		}
+
 		Vertex& operator+=(const Vertex& rhs)
 		{
 			pos += rhs.pos;
