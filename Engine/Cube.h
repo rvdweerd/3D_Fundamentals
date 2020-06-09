@@ -140,7 +140,7 @@ public:
 		std::vector<Vec2> tc;
 		std::vector<Axis> normals_axes;
 
-		const float texDim = 2.0f; // used for texture wrapping
+		const float texDim = 1.0f; // used for texture wrapping
 		
 		vertices.emplace_back(-side, -side, -side);	// #0
 		vertices.emplace_back(+side, -side, -side);	// #1

@@ -26,6 +26,7 @@
 #include "SceneCubeVertexColor.h"
 #include "SceneCubeSolidColors.h"
 #include "ScenePyramidSkin.h"
+#include "SceneRectangleSkin.h"
 
 Game::Game( MainWindow& wnd )
 	:
@@ -36,6 +37,7 @@ Game::Game( MainWindow& wnd )
 	//scenes.push_back(std::make_unique<SolidCubeScene>());
 	//scenes.push_back(std::make_unique<SolidPyramidScene>());
 	//scenes.push_back(std::make_unique<TexSkinCubeScene>());
+	scenes.push_back(std::make_unique<SceneRectangleSkin>(gfx, L"Images\\skin_pyr.bmp"));
 	scenes.push_back(std::make_unique<ScenePyramidSkin>(gfx, L"Images\\skin_pyr.bmp"));
 	scenes.push_back(std::make_unique<ScenePyramidSkin>(gfx, L"Images\\wood256.bmp"));
 	scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, Colors::LightGray));

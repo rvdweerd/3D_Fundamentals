@@ -165,6 +165,12 @@
     <ClInclude Include="ScenePyramidSkin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SceneRectangleSkin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Rectangle.h">
+      <Filter>Header Files\3D_shapes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXErr.cpp">

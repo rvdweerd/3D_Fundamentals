@@ -223,21 +223,47 @@ private:
 			// (some waste for interpolating x,y,z, but makes life easier not having
 			//  to split them off, and z will be needed in the future anyways...)
 			auto iLine = itEdge0;
-
-			// calculate delta scanline interpolant / dx
-			const float dx = itEdge1.pos.x - itEdge0.pos.x;
-			const auto diLine = (itEdge1 - iLine) / dx;
-
-			// prestep scanline interpolant
-			iLine += diLine * (float(xStart) + 0.5f - itEdge0.pos.x);
-
-			for (int x = xStart; x < xEnd; x++, iLine += diLine)
+			if (false) // no perspective correction
 			{
-				// recover interpolated z from interpolated 1/z
-				const float z = 1.0f / iLine.pos.z;
-				const auto attr = iLine * z;
-				// perform texture lookup, clamp, and write pixel
-				gfx.PutPixel(x, y, effect.ps( attr ));
+				//iLine = iLine / iLine.pos.z;
+				//itEdge0 = itEdge0 / iLine.pos.z;
+				//itEdge1 = itEdge1 / iLine.pos.z;
+				// calculate delta scanline interpolant / dx
+				const float dx = itEdge1.pos.x - itEdge0.pos.x;
+				float corr = 1/ itEdge0.pos.z;
+				float corr2 = 1 / itEdge1.pos.z;
+				const auto diLine = (itEdge1*corr2  - iLine*corr) / dx;
+				iLine *= corr;
+				// prestep scanline interpolant
+				iLine += diLine * (float(xStart) + 0.5f - itEdge0.pos.x);
+
+				for (int x = xStart; x < xEnd; x++, iLine += diLine)
+				{
+					// recover interpolated z from interpolated 1/z
+					//const float z = 1.0f / iLine.pos.z;
+					//const auto attr = iLine * z;
+					// perform texture lookup, clamp, and write pixel
+					gfx.PutPixel(x, y, effect.ps(iLine));
+				}
+
+			}
+			else
+			{
+				// calculate delta scanline interpolant / dx
+				const float dx = itEdge1.pos.x - itEdge0.pos.x;
+				const auto diLine = (itEdge1 - iLine) / dx;
+
+				// prestep scanline interpolant
+				iLine += diLine * (float(xStart) + 0.5f - itEdge0.pos.x);
+
+				for (int x = xStart; x < xEnd; x++, iLine += diLine)
+				{
+					// recover interpolated z from interpolated 1/z
+					const float z = 1.0f / iLine.pos.z;
+					const auto attr = iLine * z;
+					// perform texture lookup, clamp, and write pixel
+					gfx.PutPixel(x, y, effect.ps(attr));
+				}
 			}
 		}
 	}
