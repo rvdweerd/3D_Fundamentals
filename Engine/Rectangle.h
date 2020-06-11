@@ -74,11 +74,11 @@ public:
 		tc.emplace_back(ConvertTexCoord(2.0f, 0.0f));	// (2,0)
 		tc.emplace_back(ConvertTexCoord(1.0f, 0.0f));	// (1,0)
 
-		normals_axes.emplace_back(Vec3{ 0	,	 0,		 0 },	Vec3{ side * 2.5f ,	 0,				 0			}, Colors::Blue);		// X-axis
-		normals_axes.emplace_back(Vec3{ 0,		 0,		 0 },	Vec3{ 0,			 side * 2.5f ,	 0			}, Colors::Green);		// Y-axis
-		normals_axes.emplace_back(Vec3{ 0,		 0,		 0 },	Vec3{ 0,			 0,				 side * 2.5f}, Colors::Red);		// Z-axis
-		normals_axes.emplace_back(Vec3{ 0,		 0,		0 },Vec3{ 0,			 0,				-side * 1.5f}, Colors::LightGray);	// front
-		normals_axes.emplace_back(Vec3{ 0,		 0,		 0 }, Vec3{ 0,			 0,				 side * 1.5f }, Colors::LightGray);	// back
+		normals_axes.emplace_back(Vec3{ 0	,	 0,		 0 },	Vec3{ side * 1.5f ,	 0,				 0			}, Colors::Blue);		// X-axis
+		normals_axes.emplace_back(Vec3{ 0,		 0,		 0 },	Vec3{ 0,			 side * 1.5f ,	 0			}, Colors::Green);		// Y-axis
+		normals_axes.emplace_back(Vec3{ 0,		 0,		 0 },	Vec3{ 0,			 0,				 side * 1.5f}, Colors::Red);		// Z-axis
+		normals_axes.emplace_back(Vec3{ 0,		 0,		0 },	Vec3{ 0,			 0,				-side * 1.5f}, Colors::LightGray);	// front
+		//normals_axes.emplace_back(Vec3{ 0,		 0,		 0 }, Vec3{ 0,			 0,				 side * 1.5f }, Colors::LightGray);	// back
 
 		std::vector<V> verts(vertices.size());
 		for (size_t i = 0; i < vertices.size(); i++)

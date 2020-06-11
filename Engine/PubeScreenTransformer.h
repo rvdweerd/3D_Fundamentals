@@ -16,8 +16,10 @@ public:
 		//float zInv = 1.0f;
 		//if (divide) 
 		float zInv = 1.0f / v.pos.z;
-		
 		v *= zInv;
+		//v.pos.x *= zInv;
+		//v.pos.y *= zInv;
+		
 		v.pos.x = (v.pos.x + 1.0f) * xFactor;
 		v.pos.y = (-v.pos.y + 1.0f) * yFactor;
 		v.pos.z = zInv;

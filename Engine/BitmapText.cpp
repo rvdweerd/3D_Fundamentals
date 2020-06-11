@@ -32,7 +32,7 @@ void BitmapText::DrawChar(int x, int y, Color textColor, char ch, Font font)
 {
 	// create effect functor
 	//SpriteEffect::Substitution e{ Colors::White, textColor };
-	SpriteEffect::Copy e;
+	//SpriteEffect::Copy e;
 	SpriteEffect::Chroma e_c(Colors::Black);
 	SpriteEffect::Substitution e_s(4294967295, Colors::Red);
 	// draw the character

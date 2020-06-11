@@ -92,9 +92,9 @@ public:
 		assert(clip.top >= 0);
 		assert(clip.bottom <= ScreenHeight);
 		assert(srcRect.left >= 0);
-		assert(srcRect.right <= s.GetWidth());
+		assert(srcRect.right <= (int)s.GetWidth());
 		assert(srcRect.top >= 0);
-		assert(srcRect.bottom <= s.GetHeight());
+		assert(srcRect.bottom <= (int)s.GetHeight());
 		if (x < clip.left)
 		{
 			srcRect.left += clip.left - x;

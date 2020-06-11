@@ -45,8 +45,8 @@ Game::Game( MainWindow& wnd )
 	scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, L"Images\\wood256.bmp"));
 	scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, L"Images\\dice.bmp"));
 	scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, L"Images\\eye.bmp"));
-	scenes.push_back(std::make_unique<SceneCubeVertexColor>(gfx));
-	scenes.push_back(std::make_unique<SceneCubeSolidColors>(gfx));
+	//scenes.push_back(std::make_unique<SceneCubeVertexColor>(gfx));
+	//scenes.push_back(std::make_unique<SceneCubeSolidColors>(gfx));
 
 	currentScene = scenes.begin();
 }
