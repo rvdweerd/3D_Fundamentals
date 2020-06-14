@@ -13,4 +13,5 @@ Stage: Added pixel shader to the pipeline (templated function object for flexibi
 ![pyramid demo](VertexColorEffect.gif)
 
 Stage: Z-buffer added
+
 ![depth buffer demo](twocubes.gif)
