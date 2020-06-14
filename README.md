@@ -11,3 +11,6 @@ Stage: Texture mapping (with clamping, wrapping of textures)
 
 Stage: Added pixel shader to the pipeline (templated function object for flexibility in rendering effects)
 ![pyramid demo](VertexColorEffect.gif)
+
+Stage: Z-buffer added
+![depth buffer demo](twocubes.gif)
