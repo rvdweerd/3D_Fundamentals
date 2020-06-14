@@ -84,6 +84,7 @@ public:
 	}
 	virtual void Draw() override
 	{
+		pipeline.BeginFrame();
 		// set pipeline transform
 		pipeline.BindRotation(R_main);
 		pipeline.BindTranslation({ 0.0f,0.0f,offset_z });

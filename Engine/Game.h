@@ -24,6 +24,7 @@
 #include "Scene.h"
 #include "FrameTimer.h"
 #include "BitmapText.h"
+#include "ZBuffer.h"
 
 class Game
 {
@@ -44,6 +45,7 @@ private:
 	Graphics gfx;
 	FrameTimer ft;
 	BitmapText bmText;
+	//ZBuffer zb;
 	/********************************/
 	/*  User Variables              */
 	//Teapot teapot;

@@ -7,13 +7,13 @@
 #include "SolidEffect.h"
 
 // scene demonstrating solid colored cube
-class SceneCubeSolidColors : public Scene
+class SceneDoubleCube : public Scene
 {
 public:
 	typedef Pipeline<SolidEffect> Pipeline;
 	typedef Pipeline::Vertex Vertex;
 public:
-	SceneCubeSolidColors(Graphics& gfx)
+	SceneDoubleCube(Graphics& gfx)
 		:
 		itlist(Cube::GetIndependentFaces<Vertex>()),
 		pipeline(gfx),
@@ -23,7 +23,7 @@ public:
 		Color colarr[8] = { Colors::Red, Colors::Green, Colors::Blue, Colors::Yellow, Colors::Cyan, Colors::Magenta, Colors::White, Colors::Black };
 		for (size_t i = 0; i < 24; i++)
 		{
-			itlist.vertices[i].color = colarr[i / 4];
+			itlist.vertices[i].color = colarr[i/4];
 		}
 	}
 	virtual void Update(Keyboard& kbd, Mouse& mouse, float dt) override
@@ -65,7 +65,7 @@ public:
 		}
 		if (kbd.KeyIsPressed('P'))
 		{
-			angVel += 1*PI/180;
+			angVel += 1 * PI / 180;
 		}
 		if (kbd.KeyIsPressed('L'))
 		{
@@ -78,15 +78,28 @@ public:
 		// Update rotation matrix based on keyboard input
 		Mat3 rot = Mat3::RotationX(Dtheta_x) * Mat3::RotationZ(Dtheta_z) * Mat3::RotationY(Dtheta_y);
 		R_main = rot * R_main;
+		Mat3 rot_fixed = Mat3::RotationX(-Dtheta_x) * Mat3::RotationZ(-Dtheta_z) * Mat3::RotationY(-Dtheta_y);
+		R_main_fixed = rot_fixed * R_main_fixed;
 	}
 	virtual void Draw() override
 	{
 		pipeline.BeginFrame();
-		// set pipeline transform
-		pipeline.BindRotation(R_main);
-		pipeline.BindTranslation({ 0.0f,0.0f,offset_z });
-		// render triangles
-		pipeline.Draw(itlist);
+		// Draw Fixed Cube
+		{
+			// set pipeline transform
+			pipeline.BindRotation(R_main_fixed);
+			pipeline.BindTranslation({ 0.0f,0.0f,2.0f });
+			// render triangles
+			pipeline.Draw(itlist);
+		}
+		// Draw Mobile Cube
+		{
+			// set pipeline transform
+			pipeline.BindRotation(R_main);
+			pipeline.BindTranslation({ 0.0f,0.0f,offset_z });
+			// render triangles
+			pipeline.Draw(itlist);
+		}
 	}
 	virtual float GetAngVel() override
 	{
@@ -97,10 +110,12 @@ public:
 private:
 	IndexedTriangleList<Vertex> itlist;  // { Vector<Vertex> verts, Vector<size_t> indices, Vector<Axis> normal_axes} verts: in object space (from definition)
 	Pipeline pipeline;
-	static constexpr float zVel = 2.0f;
-	float offset_z = 5.0f;
+	static constexpr float zVel = 0.1f;
+	float offset_z = 2.0f;
 	float Dtheta_x = 0.0f;
 	float Dtheta_y = 0.0f;
 	float Dtheta_z = 0.0f;
 	Mat3 R_main = Mat3::RotationBirdEye();
+	Mat3 R_main_fixed = Mat3::Identity();
+
 };

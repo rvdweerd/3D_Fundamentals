@@ -47,6 +47,18 @@ public:
 		_Mat3 result = *this;
 		return result *= rhs;
 	}
+	_Mat3 operator-() const
+	{
+		_Mat3 result;
+		for (size_t j = 0; j < 3; j++)
+		{
+			for (size_t k = 0; k < 3; k++)
+			{
+				result.elements[j][k] = -elements[j][k];
+			}
+		}
+		return result;
+	}
 	_Mat3& operator*=( const _Mat3& rhs )
 	{
 		return *this = *this * rhs;
