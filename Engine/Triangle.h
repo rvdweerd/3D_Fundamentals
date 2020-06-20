@@ -1,4 +1,5 @@
 #pragma once
+//#include "Vec3.h"
 
 template <class T>
 struct Triangle
@@ -7,3 +8,4 @@ struct Triangle
 	T v1;
 	T v2;
 };
+

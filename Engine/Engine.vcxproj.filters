@@ -177,6 +177,15 @@
     <ClInclude Include="SceneDoubleCube.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SceneTwoTriangles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PrimitiveTriangle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeoMath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXErr.cpp">

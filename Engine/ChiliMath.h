@@ -45,3 +45,7 @@ inline T interpolate(const T& from, const T& to, float alpha)
 {
 	return {from + (to-from)*alpha};
 }
+
+template <typename T> int sgn(T val) {
+	return (T(0) < val) - (val < T(0));
+}

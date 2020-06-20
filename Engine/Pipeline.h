@@ -8,7 +8,7 @@
 #include "Triangle.h"
 #include "IndexedTriangleList.h"
 #include "ZBuffer.h"
-
+//#include "GeoMath.h"
 
 
 template<class Effect>
@@ -21,10 +21,11 @@ public:
 		gfx(gfx),
 		zb(Graphics::ScreenWidth,Graphics::ScreenHeight)
 	{}
-	void Draw(IndexedTriangleList<Vertex>& triList)
+	std::vector<Vec3> Draw(IndexedTriangleList<Vertex>& triList)
 	{
-		ProcessVertices(triList.vertices, triList.indices, triList.sides);
+		std::vector<Vec3> ret = ProcessVertices(triList.vertices, triList.indices, triList.sides);
 		ProcessAxes(triList.normals_axes);
+		return ret;
 	}
 	void BindRotation(const Mat3& rotation_in)
 	{
@@ -38,8 +39,146 @@ public:
 	{
 		zb.Clear();
 	}
+	std::pair<Vec3, Vec3> TrianglesIntersect(Vec3& v1_0, Vec3& v1_1, Vec3& v1_2, const Vec3& v2_0, const Vec3& v2_1, const Vec3& v2_2)
+	{
+		// Plane equation for Plane2
+		Vec3 N2 = (v2_1 - v2_0) % (v2_2 - v2_0);
+		//N2 /= N2.Len();
+		float d2 = -N2 * v2_0;
+
+		// Plane equation for Plane1
+		Vec3 N1 = (v1_1 - v1_0) % (v1_2 - v1_0);
+		//N1 /= N1.Len();
+		float d1 = -N1 * v1_0;
+
+		// signed distances from T1 vertices to Plane2
+		float d_v1_0 = N2 * v1_0 + d2;
+		float d_v1_1 = N2 * v1_1 + d2;
+		float d_v1_2 = N2 * v1_2 + d2;
+
+		// Test: triangle 1 is coplanar
+		//assert(!(d_v1_0 == 0 && d_v1_1 == 0 && d_v1_2 == 0));
+		if ((d_v1_0 == 0 && d_v1_1 == 0 && d_v1_2 == 0)) return { {0,0,2},{0,0,2} };
+
+		// Test: triangle 1 is not fully on 1 side of P2
+		bool NoT1VertexOnPlane2 = (d_v1_0 != 0 && d_v1_1 != 0 && d_v1_2 != 0);
+		bool T1DistancesHaveSameSign = (d_v1_0 > 0 && d_v1_1 > 0 && d_v1_2 > 0) || (d_v1_0 < 0 && d_v1_1 < 0 && d_v1_2 < 0);
+		//assert(!(NoT1VertexOnPlane2 && T1DistancesHaveSameSign));
+		if (NoT1VertexOnPlane2 && T1DistancesHaveSameSign) return { {0,0,2},{0,0,2} };
+
+		// Ensure that v1_1 is solitary (two other vertices are on other side of T2)
+		if (sgn(d_v1_0) == sgn(d_v1_1))
+		{
+			std::swap(d_v1_1, d_v1_2);
+			//std::swap(v1_0, v1_2); NEED TO IMPLEMENT MOVE CONSTRUCTOR FOR Vec3 FOR THIS TO WORK
+			Vec3 tmp = v1_1;
+			v1_1 = v1_2;
+			v1_2 = tmp;
+
+			// Plane equation for Plane2
+			N2 = (v2_1 - v2_0) % (v2_2 - v2_0);
+			//N2 /= N2.Len();
+			d2 = -N2 * v2_0;
+			// Plane equation for Plane1
+			N1 = (v1_1 - v1_0) % (v1_2 - v1_0);
+			//N1 /= N1.Len();
+			d1 = -N1 * v1_0;
+			// signed distances from T1 vertices to Plane2
+			//d_v1_0 = N2 * v1_0 + d2;
+			//d_v1_1 = N2 * v1_1 + d2;
+			//d_v1_2 = N2 * v1_2 + d2;
+		}
+		else if (sgn(d_v1_2) == sgn(d_v1_1))
+		{
+			std::swap(d_v1_1, d_v1_0);
+			Vec3 tmp = v1_0;
+			v1_0 = v1_1;
+			v1_1 = tmp;
+
+			// Plane equation for Plane2
+			N2 = (v2_1 - v2_0) % (v2_2 - v2_0);
+			//N2 /= N2.Len();
+			d2 = -N2 * v2_0;
+			// Plane equation for Plane1
+			N1 = (v1_1 - v1_0) % (v1_2 - v1_0);
+			//N1 /= N1.Len();
+			d1 = -N1 * v1_0;
+			// signed distances from T1 vertices to Plane2
+			d_v1_0 = N2 * v1_0 + d2;
+			d_v1_1 = N2 * v1_1 + d2;
+			d_v1_2 = N2 * v1_2 + d2;
+		}
+
+		// Intersection line L = O + t*D (O = any point on line, D = direction), this represents the nullspace Ax=0)
+		Vec3 D = N1 % N2;
+		D /= D.Len();
+		// Particular point on line (Ax=b, particular solution)
+		// Find largest entry of D
+		Vec3 O;
+		if (abs(D.x) >= abs(D.y) && abs(D.x) >= abs(D.z)) // D.x largest component
+		{
+			float a = N1.y, b = N1.z;
+			float c = N2.y, d = N2.z;
+			float det = 1 / (a * d - b * c);
+			float O_y = det * (d * (-d1) - b * (-d2));
+			float O_z = det * (-c * (-d1) + a * (-d2));
+			O = { 0,O_y,O_z };
+		}
+		else if (abs(D.y) >= abs(D.x) && abs(D.y) >= abs(D.z)) // D.y largest component
+		{
+			float a = N1.x, b = N1.z;
+			float c = N2.x, d = N2.z;
+			float det = 1 / (a * d - b * c);
+			float O_x = det * (d * (-d1) - b * (-d2));
+			float O_z = det * (-c * (-d1) + a * (-d2));
+			O = { O_x,0,O_z };
+		}
+		else // D.z largest component
+		{
+			float a = N1.x, b = N1.y;
+			float c = N2.x, d = N2.y;
+			float det = 1 / (a * d - b * c);
+			float O_x = det * (d * (-d1) - b * (-d2));
+			float O_y = det * (-c * (-d1) + a * (-d2));
+			O = { O_x,O_y,0 };
+		}
+		assert(N1 * (O + D * 20) + d1 < 0.0001f);
+		assert(N2 * (O + D * 10) + d2 < 0.0001f);
+
+		// Project vertices of T1 onto Intersection Line L
+		Vec3 p_v1_0 = D * (D * (v1_0 - O)) / (D * D) + O;
+		Vec3 p_v1_1 = D * (D * (v1_1 - O)) / (D * D) + O;
+		Vec3 p_v1_2 = D * (D * (v1_2 - O)) / (D * D) + O;
+
+		// Interpolation to find t1
+		//float S = abs((p_v1_1 - p_v1_0).Len());
+		float a = abs((p_v1_0 - v1_0).Len());
+		float b = abs((p_v1_1 - v1_1).Len());
+		float p = a / (b + a);
+		//Vec3 t1 = p_v1_1 + (p_v1_0 - p_v1_1) * p;
+		//Vec3 t1 = p_v1_0 + (p_v1_1 - p_v1_0) * p;
+		//Vec3 t1 = p_v1_0 + (p_v1_1 - p_v1_0) * p;
+		Vec3 t1 = p_v1_0 + (p_v1_1 - p_v1_0) * (d_v1_0 / (d_v1_0 - d_v1_1));
+		
+		// Interpolation to find t2
+		//S = abs((p_v1_1 - p_v1_2).Len());
+		a = abs((p_v1_2 - v1_2).Len());
+		b = abs((p_v1_1 - v1_1).Len());
+		p = a  / (b + a);
+		
+		//Vec3 t2 = p_v1_2 + (p_v1_1 - p_v1_2) * p;
+		//Vec3 t2 = p_v1_2 + (p_v1_1 - p_v1_2) * p ;
+		Vec3 t2 = p_v1_2 + (p_v1_1 - p_v1_2) * (d_v1_2 / (d_v1_2 - d_v1_1));
+		return { t1,t2 };
+	}
+	void DrawLine(Vec3& p1, Vec3& p2, Color col)
+	{
+		pst.Transform(p1, false);
+		pst.Transform(p2, false);
+		gfx.DrawLine(p1, p2, col);
+	}
 private:
-	void ProcessVertices(const std::vector<Vertex>& vertices, const std::vector<size_t>& indices, const std::vector<size_t>& sides)
+	std::vector<Vec3> ProcessVertices(const std::vector<Vertex>& vertices, const std::vector<size_t>& indices, const std::vector<size_t>& sides)
 	{
 		// create vertex vector for vs output
 		std::vector<Vertex> verticesOut;
@@ -52,7 +191,13 @@ private:
 		
 		// assemble triangles from stream of indices and vertices
 		AssembleTriangles(verticesOut, indices);
-		ProcessSidesWireFrame(verticesOut, sides);
+		//ProcessSidesWireFrame(verticesOut, sides);
+		std::vector<Vec3> ret;
+		for (const auto& v : verticesOut)
+		{
+			ret.push_back(v.pos);
+		}
+		return ret;
 	}
 	void ProcessSidesWireFrame(const std::vector<Vertex>& vertices, const std::vector<size_t>& sides)
 	{
@@ -115,17 +260,20 @@ private:
 
 		// draw the triangle
 		DrawTriangle(triangle);
-		//DrawTriangleEdges(triangle);
+		DrawTriangleEdges(triangle);
 	}
 	void DrawTriangleEdges(const Triangle<Vertex>& triangle)
 	{
-		//gfx.DrawLine(triangle.v0.pos, triangle.v1.pos, Colors::Gray);
+		gfx.DrawLine(triangle.v0.pos, triangle.v1.pos, Colors::Blue);
+		gfx.DrawLine(triangle.v1.pos, triangle.v2.pos, Colors::Blue);
+		gfx.DrawLine(triangle.v0.pos, triangle.v2.pos, Colors::Blue);
+		return;
 		auto it0 = triangle.v0;
 		auto it1 = triangle.v1;
 		float dx = it1.pos.x - it0.pos.x;
 		float dy = it1.pos.y - it0.pos.y;
 		{
-			if (abs(dx) < abs(dy)) // steep line (iterate over y)
+			if (abs(dx) <= abs(dy)) // steep line (iterate over x)
 			{
 				if (dy < 0)
 				{
@@ -135,21 +283,25 @@ private:
 				}
 				const auto dLine = (it1 - it0) / dy;
 				auto iLine = it0;
-				for (int y = it0.pos.y; y < it1.pos.y; y++, iLine += dLine)
+
+				// prestep scanline interpolant
+				const int xStart = (int)ceil(it0.pos.x - 0.5f);
+				iLine += dLine * (float(xStart) + 0.5f - it0.pos.x);
+
+				for (; iLine.pos.y < it1.pos.y; iLine += dLine)
 				{
-					//if (abs(iLine.pos.z) > 0.1)
 					{
 						const float z = 1.0f / iLine.pos.z;
-						if (zb.TestAndSet(iLine.pos.x, y, z))
+						if (zb.Test((int)iLine.pos.x, (int)iLine.pos.y, z).first)
 						{
 							//const auto attr = iLine * z;
 							// perform texture lookup, clamp, and write pixel
-							gfx.PutPixel(iLine.pos.x, iLine.pos.y, Colors::Gray);
+							gfx.PutPixel((int)iLine.pos.x, (int)iLine.pos.y, Colors::Blue);
 						}
 					}
 				}
 			}
-			else // shallow line (iterate over x)
+			else // shallow line (iterate over y)
 			{
 				if (dx < 0)
 				{
@@ -159,16 +311,20 @@ private:
 				}
 				const auto dLine = (it1 - it0) / dx;
 				auto iLine = it0;
-				for (int x = it0.pos.x; x < it1.pos.x; x++, iLine += dLine)
+
+				// prestep scanline interpolant
+				const int xStart = (int)ceil(it0.pos.x - 0.5f);
+				iLine += dLine * (float(xStart) + 0.5f - it0.pos.x);
+
+				for (; iLine.pos.x < it1.pos.x; iLine += dLine)
 				{
-					//if (abs(iLine.pos.z) > 0.1)
 					{
 						const float z = 1.0f / iLine.pos.z;
-						if (zb.TestAndSet(x, iLine.pos.y, z))
+						if (zb.Test((int)iLine.pos.x , (int)iLine.pos.y, z).first)
 						{
 							//const auto attr = iLine * z;
 							// perform texture lookup, clamp, and write pixel
-							gfx.PutPixel(iLine.pos.x, iLine.pos.y, Colors::Gray);
+							gfx.PutPixel((int)iLine.pos.x, (int)iLine.pos.y, Colors::Blue);
 						}
 					}
 				}
@@ -180,7 +336,7 @@ private:
 		dx = it1.pos.x - it0.pos.x;
 		dy = it1.pos.y - it0.pos.y;
 		{
-			if (abs(dx) < abs(dy)) // steep line (iterate over y)
+			if (abs(dx) <= abs(dy)) // steep line (iterate over x)
 			{
 				if (dy < 0)
 				{
@@ -190,21 +346,25 @@ private:
 				}
 				const auto dLine = (it1 - it0) / dy;
 				auto iLine = it0;
-				for (int y = it0.pos.y; y < it1.pos.y; y++, iLine += dLine)
+
+				// prestep scanline interpolant
+				const int xStart = (int)ceil(it0.pos.x - 0.5f);
+				iLine += dLine * (float(xStart) + 0.5f - it0.pos.x);
+
+				for (; iLine.pos.y < it1.pos.y; iLine += dLine)
 				{
-					//if (abs(iLine.pos.z) > 0.1)
 					{
 						const float z = 1.0f / iLine.pos.z;
-						if (zb.TestAndSet(iLine.pos.x, y, z))
+						if (zb.Test((int)iLine.pos.x, (int)iLine.pos.y, z).first)
 						{
 							//const auto attr = iLine * z;
 							// perform texture lookup, clamp, and write pixel
-							gfx.PutPixel(iLine.pos.x, iLine.pos.y, Colors::Gray);
+							gfx.PutPixel((int)iLine.pos.x, (int)iLine.pos.y, Colors::Blue);
 						}
 					}
 				}
 			}
-			else // shallow line (iterate over x)
+			else // shallow line (iterate over y)
 			{
 				if (dx < 0)
 				{
@@ -214,80 +374,26 @@ private:
 				}
 				const auto dLine = (it1 - it0) / dx;
 				auto iLine = it0;
-				for (int x = it0.pos.x; x < it1.pos.x; x++, iLine += dLine)
+
+				// prestep scanline interpolant
+				const int xStart = (int)ceil(it0.pos.x - 0.5f);
+				iLine += dLine * (float(xStart) + 0.5f - it0.pos.x);
+
+				for (; iLine.pos.x < it1.pos.x; iLine += dLine)
 				{
-					//if (abs(iLine.pos.z) > 0.1)
 					{
 						const float z = 1.0f / iLine.pos.z;
-						if (zb.TestAndSet(x, iLine.pos.y, z))
+						if (zb.Test((int)iLine.pos.x, (int)iLine.pos.y, z).first)
 						{
 							//const auto attr = iLine * z;
 							// perform texture lookup, clamp, and write pixel
-							gfx.PutPixel(iLine.pos.x, iLine.pos.y, Colors::Gray);
+							gfx.PutPixel((int)iLine.pos.x, (int)iLine.pos.y, Colors::Blue);
 						}
 					}
 				}
 			}
 		}
 
-		it0 = triangle.v0;
-		it1 = triangle.v2;
-		dx = it1.pos.x - it0.pos.x;
-		dy = it1.pos.y - it0.pos.y;
-		{
-			if (abs(dx) < abs(dy)) // steep line (iterate over y)
-			{
-				if (dy < 0)
-				{
-					std::swap(it0, it1);
-					dx = -dx;
-					dy = -dy;
-				}
-				const auto dLine = (it1 - it0) / dy;
-				auto iLine = it0;
-				for (int y = it0.pos.y; y < it1.pos.y; y++, iLine += dLine)
-				{
-					//if (abs(iLine.pos.z) > 0.1)
-					{
-						const float z = 1.0f / iLine.pos.z;
-						if (zb.TestAndSet(iLine.pos.x, y, z))
-						{
-							//const auto attr = iLine * z;
-							// perform texture lookup, clamp, and write pixel
-							gfx.PutPixel(iLine.pos.x, iLine.pos.y, Colors::Gray);
-						}
-					}
-				}
-			}
-			else // shallow line (iterate over x)
-			{
-				if (dx < 0)
-				{
-					std::swap(it0, it1);
-					dx = -dx;
-					dy = -dy;
-				}
-				const auto dLine = (it1 - it0) / dx;
-				auto iLine = it0;
-				for (int x = it0.pos.x; x < it1.pos.x; x++, iLine += dLine)
-				{
-					//if (abs(iLine.pos.z) > 0.1)
-					{
-						const float z = 1.0f / iLine.pos.z;
-						if (zb.TestAndSet(x, iLine.pos.y, z))
-						{
-							//const auto attr = iLine * z;
-							// perform texture lookup, clamp, and write pixel
-							gfx.PutPixel(iLine.pos.x, iLine.pos.y, Colors::Gray);
-						}
-					}
-				}
-			}
-		}
-
-
-		//gfx.DrawLine(triangle.v1.pos, triangle.v2.pos, Colors::Gray);
-		//gfx.DrawLine(triangle.v0.pos, triangle.v2.pos, Colors::Gray);
 	}
 	void DrawTriangle(const Triangle<Vertex>& triangle)
 	{
@@ -408,11 +514,21 @@ private:
 				// recover interpolated z from interpolated 1/z
 				const float z = 1.0f/ iLine.pos.z;
 
-				if (zb.TestAndSet(x, y, z))
+				auto p = zb.TestAndSet(x, y, z);
+				if (p.first) // visible
 				{
 					const auto attr = iLine * z;
 					// perform texture lookup, clamp, and write pixel
-					gfx.PutPixel(x, y, effect.ps(attr));
+					if (p.second) // on cutting edge
+					{
+						//gfx.PutPixel(x, y, Colors::Red);
+					}
+					else
+					{
+						//gfx.PutPixel(x, y, effect.ps(attr));
+						//if (x <= xStart+0.5 || x>=xEnd-1.5 || y <= yStart+0.5 || y>=yEnd-1.5) gfx.PutPixel(x, y, Colors::Blue);
+						//else gfx.PutPixel(x, y, Colors::LightGray);
+					}
 				}
 			}			
 		}

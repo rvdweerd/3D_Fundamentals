@@ -1,30 +1,30 @@
 #pragma once
 
 #include "Scene.h"
-#include "Cube.h"
+#include "PrimitiveTriangle.h"
 #include "Mat3.h"
 #include "Pipeline.h"
 #include "SolidEffect.h"
 
 // scene demonstrating solid colored cube
-class SceneDoubleCube : public Scene
+class SceneTwoTriangles : public Scene
 {
 public:
 	typedef Pipeline<SolidEffect> Pipeline;
 	typedef Pipeline::Vertex Vertex;
 public:
-	SceneDoubleCube(Graphics& gfx)
+	SceneTwoTriangles(Graphics& gfx)
 		:
-		itlist(Cube::GetIndependentFaces<Vertex>()),
+		itlist(PrimitiveTriangle::GetPlain<Vertex>()),
 		pipeline(gfx),
-		Scene(L"Vertex color Cube")
+		Scene(L"Two triangles intersecting")
 	{
 		itlist.sides.clear();
-		//Color colarr[8] = { Colors::Red, Colors::Green, Colors::Blue, Colors::Yellow, Colors::Cyan, Colors::Magenta, Colors::White, Colors::Black };
+		//Color colarr[8] = { Colors::Red, Colors::Green, Colors::Blue, Colors::Yellow, Colors::Cyan, Colors::Magenta, Colors::White };
 		Color colarr[6] = { Colors::LightGray, Colors::Gray, Colors::LightGray, Colors::Gray, Colors::LightGray,Colors::Gray };
-		for (size_t i = 0; i < 24; i++)
+		for (size_t i = 0; i < 6; i++)
 		{
-			itlist.vertices[i].color = colarr[i/4];
+			itlist.vertices[i].color = colarr[i / 3];
 		}
 	}
 	virtual void Update(Keyboard& kbd, Mouse& mouse, float dt) override
@@ -85,22 +85,27 @@ public:
 	virtual void Draw() override
 	{
 		pipeline.BeginFrame();
-		// Draw Fixed Cube
-		{
-			// set pipeline transform
-			pipeline.BindRotation(R_main_fixed);
-			pipeline.BindTranslation({ 0.0f,0.0f,2.0f });
-			// render triangles
-			pipeline.Draw(itlist);
-		}
-		// Draw Mobile Cube
-		{
-			// set pipeline transform
-			pipeline.BindRotation(R_main);
-			pipeline.BindTranslation({ 0.0f,0.0f,offset_z });
-			// render triangles
-			pipeline.Draw(itlist);
-		}
+		// Draw Fixed Triangle
+		
+		// set pipeline transform
+		//pipeline.BindRotation(R_main_fixed);
+		pipeline.BindRotation(Mat3::Identity());
+		pipeline.BindTranslation({ 0.0f,0.0f,2.0f });
+		// render triangles
+		auto VSet1 = pipeline.Draw(itlist);
+		
+		// Draw Mobile Triangle
+		
+		// set pipeline transform
+		pipeline.BindRotation(R_main);
+		pipeline.BindTranslation({ 0.0f,0.0f,offset_z });
+		// render triangles
+		auto VSet2 = pipeline.Draw(itlist);
+		
+		auto Vpair1 = pipeline.TrianglesIntersect(VSet1[0], VSet1[1], VSet1[2], VSet2[0], VSet2[1], VSet2[2]);
+		auto Vpair2 = pipeline.TrianglesIntersect(VSet2[0], VSet2[1], VSet2[2], VSet1[0], VSet1[1], VSet1[2]);
+		pipeline.DrawLine(Vpair1.second, Vpair1.first,Colors::Red);
+		pipeline.DrawLine(Vpair2.second, Vpair2.first, Colors::Yellow);
 	}
 	virtual float GetAngVel() override
 	{

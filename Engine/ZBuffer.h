@@ -23,15 +23,41 @@ public:
 			zBuffer[i] = std::numeric_limits<float>::infinity();
 		}
 	}
-	bool TestAndSet(int x, int y, float z)
+	std::pair<bool,bool> TestAndSet(int x, int y, float z)
 	{
 		if (z < zBuffer[y * width + x])
 		{
-			zBuffer[y * width + x] = z;
-			return true;
+			if (abs(z - zBuffer[y * width + x]) < 0.01f)
+			{
+				zBuffer[y * width + x] = z;
+				return { true,true };
+			}
+			else
+			{
+				zBuffer[y * width + x] = z;
+				return { true,false };
+			}
 		}
-		return false;
+		return { false,false };
 	}
+	std::pair<bool, bool> Test(int x, int y, float z)
+	{
+		if (z < zBuffer[y * width + x])
+		{
+			if (abs(z - zBuffer[y * width + x]) < 0.005f)
+			{
+				
+				return { true,true };
+			}
+			else
+			{
+				
+				return { true,false };
+			}
+		}
+		return { false,false };
+	}
+
 private:
 	int width;
 	int height;

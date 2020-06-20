@@ -147,6 +147,7 @@
     <ClInclude Include="FrameTimer.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GDIPlusManager.h" />
+    <ClInclude Include="GeoMath.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="IndexedLineList.h" />
     <ClInclude Include="IndexedTriangleList.h" />
@@ -156,6 +157,7 @@
     <ClInclude Include="Mat3.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="Pipeline.h" />
+    <ClInclude Include="PrimitiveTriangle.h" />
     <ClInclude Include="PubeScreenTransformer.h" />
     <ClInclude Include="Pyramid.h" />
     <ClInclude Include="PyramidWithSkin.h" />
@@ -169,6 +171,7 @@
     <ClInclude Include="SceneDoubleCube.h" />
     <ClInclude Include="ScenePyramidSkin.h" />
     <ClInclude Include="SceneRectangleSkin.h" />
+    <ClInclude Include="SceneTwoTriangles.h" />
     <ClInclude Include="SolidCubeScene.h" />
     <ClInclude Include="SolidPyramidScene.h" />
     <ClInclude Include="SpriteEffect.h" />

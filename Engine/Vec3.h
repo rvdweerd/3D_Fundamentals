@@ -21,6 +21,8 @@
 #pragma once
 #include "ChiliMath.h"
 #include "Vec2.h"
+#include <cassert>
+//#include <cmath>
 
 template <typename T>
 class _Vec3 : public _Vec2<T>
@@ -153,3 +155,4 @@ public:
 typedef _Vec3<float> Vec3;
 typedef _Vec3<double> Ved3;
 typedef _Vec3<int> Vei3;
+
