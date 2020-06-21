@@ -21,4 +21,4 @@ Stage: Triangle Intersection rendering
 ![Triangle intersection](trianIsect.gif)
 
 Applying triangle intersection rendering to other shapes
-![Cube intersection lines](cubeIsect.gif)
+![Cube intersection lines](cubecuts.gif)
