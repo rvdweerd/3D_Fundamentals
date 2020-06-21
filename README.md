@@ -15,3 +15,10 @@ Stage: Added pixel shader to the pipeline (templated function object for flexibi
 Stage: Z-buffer added
 
 ![depth buffer demo](twocubes.gif)
+
+Stage: Triangle Intersection rendering
+(Own implementation of "A Fast Triangle-Triangle Intersection Test" by Tomas Moeller)
+![Triangle intersection](trianIsect.gif)
+
+Applying triangle intersection rendering to other shapes
+![Cube intersection lines](cubeIsect.gif)
