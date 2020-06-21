@@ -39,7 +39,7 @@ public:
 	{
 		zb.Clear();
 	}
-	std::pair<Vec3, Vec3> TrianglesIntersect(Vec3& v1_0, Vec3& v1_1, Vec3& v1_2, const Vec3& v2_0, const Vec3& v2_1, const Vec3& v2_2)
+	IntersectData TrianglesIntersect(Vec3& v1_0, Vec3& v1_1, Vec3& v1_2, const Vec3& v2_0, const Vec3& v2_1, const Vec3& v2_2)
 	{
 		// Plane equation for Plane2
 		Vec3 N2 = (v2_1 - v2_0) % (v2_2 - v2_0);
@@ -58,13 +58,13 @@ public:
 
 		// Test: triangle 1 is coplanar
 		//assert(!(d_v1_0 == 0 && d_v1_1 == 0 && d_v1_2 == 0));
-		if ((d_v1_0 == 0 && d_v1_1 == 0 && d_v1_2 == 0)) return { {0,0,2},{0,0,2} };
+		if ((d_v1_0 == 0 && d_v1_1 == 0 && d_v1_2 == 0)) return { {{0,0,2},{0,0,2} }, { 0,0,0 }, { 0,0,0 }};
 
 		// Test: triangle 1 is not fully on 1 side of P2
 		bool NoT1VertexOnPlane2 = (d_v1_0 != 0 && d_v1_1 != 0 && d_v1_2 != 0);
 		bool T1DistancesHaveSameSign = (d_v1_0 > 0 && d_v1_1 > 0 && d_v1_2 > 0) || (d_v1_0 < 0 && d_v1_1 < 0 && d_v1_2 < 0);
 		//assert(!(NoT1VertexOnPlane2 && T1DistancesHaveSameSign));
-		if (NoT1VertexOnPlane2 && T1DistancesHaveSameSign) return { {0,0,2},{0,0,2} };
+		if (NoT1VertexOnPlane2 && T1DistancesHaveSameSign) return { {{0,0,2},{0,0,2} }, { 0,0,0 }, { 0,0,0 } };
 
 		// Ensure that v1_1 is solitary (two other vertices are on other side of T2)
 		if (sgn(d_v1_0) == sgn(d_v1_1))
@@ -169,9 +169,9 @@ public:
 		//Vec3 t2 = p_v1_2 + (p_v1_1 - p_v1_2) * p;
 		//Vec3 t2 = p_v1_2 + (p_v1_1 - p_v1_2) * p ;
 		Vec3 t2 = p_v1_2 + (p_v1_1 - p_v1_2) * (d_v1_2 / (d_v1_2 - d_v1_1));
-		return { t1,t2 };
+		return { {t1,t2},O,D };
 	}
-	void DrawLine(Vec3& p1, Vec3& p2, Color col)
+	void DrawLine(Vec3 p1, Vec3 p2, Color col)
 	{
 		pst.Transform(p1, false);
 		pst.Transform(p2, false);
@@ -260,7 +260,7 @@ private:
 
 		// draw the triangle
 		DrawTriangle(triangle);
-		DrawTriangleEdges(triangle);
+		//DrawTriangleEdges(triangle);
 	}
 	void DrawTriangleEdges(const Triangle<Vertex>& triangle)
 	{
@@ -394,6 +394,68 @@ private:
 			}
 		}
 
+		it0 = triangle.v0;
+		it1 = triangle.v2;
+		dx = it1.pos.x - it0.pos.x;
+		dy = it1.pos.y - it0.pos.y;
+		{
+			if (abs(dx) <= abs(dy)) // steep line (iterate over x)
+			{
+				if (dy < 0)
+				{
+					std::swap(it0, it1);
+					dx = -dx;
+					dy = -dy;
+				}
+				const auto dLine = (it1 - it0) / dy;
+				auto iLine = it0;
+
+				// prestep scanline interpolant
+				const int xStart = (int)ceil(it0.pos.x - 0.5f);
+				iLine += dLine * (float(xStart) + 0.5f - it0.pos.x);
+
+				for (; iLine.pos.y < it1.pos.y; iLine += dLine)
+				{
+					{
+						const float z = 1.0f / iLine.pos.z;
+						if (zb.Test((int)iLine.pos.x, (int)iLine.pos.y, z).first)
+						{
+							//const auto attr = iLine * z;
+							// perform texture lookup, clamp, and write pixel
+							gfx.PutPixel((int)iLine.pos.x, (int)iLine.pos.y, Colors::Blue);
+						}
+					}
+				}
+			}
+			else // shallow line (iterate over y)
+			{
+				if (dx < 0)
+				{
+					std::swap(it0, it1);
+					dx = -dx;
+					dy = -dy;
+				}
+				const auto dLine = (it1 - it0) / dx;
+				auto iLine = it0;
+
+				// prestep scanline interpolant
+				const int xStart = (int)ceil(it0.pos.x - 0.5f);
+				iLine += dLine * (float(xStart) + 0.5f - it0.pos.x);
+
+				for (; iLine.pos.x < it1.pos.x; iLine += dLine)
+				{
+					{
+						const float z = 1.0f / iLine.pos.z;
+						if (zb.Test((int)iLine.pos.x, (int)iLine.pos.y, z).first)
+						{
+							//const auto attr = iLine * z;
+							// perform texture lookup, clamp, and write pixel
+							gfx.PutPixel((int)iLine.pos.x, (int)iLine.pos.y, Colors::Blue);
+						}
+					}
+				}
+			}
+		}
 	}
 	void DrawTriangle(const Triangle<Vertex>& triangle)
 	{
@@ -521,13 +583,13 @@ private:
 					// perform texture lookup, clamp, and write pixel
 					if (p.second) // on cutting edge
 					{
-						//gfx.PutPixel(x, y, Colors::Red);
+						//gfx.PutPixel(x, y, Colors::Yellow);
 					}
 					else
 					{
-						//gfx.PutPixel(x, y, effect.ps(attr));
+						gfx.PutPixel(x, y, effect.ps(attr));
 						//if (x <= xStart+0.5 || x>=xEnd-1.5 || y <= yStart+0.5 || y>=yEnd-1.5) gfx.PutPixel(x, y, Colors::Blue);
-						//else gfx.PutPixel(x, y, Colors::LightGray);
+						///*else*/ gfx.PutPixel(x, y, Colors::Black);
 					}
 				}
 			}			

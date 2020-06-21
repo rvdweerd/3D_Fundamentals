@@ -22,6 +22,7 @@
 #include "ChiliMath.h"
 #include "Vec2.h"
 #include <cassert>
+#include <utility>
 //#include <cmath>
 
 template <typename T>
@@ -156,3 +157,9 @@ typedef _Vec3<float> Vec3;
 typedef _Vec3<double> Ved3;
 typedef _Vec3<int> Vei3;
 
+struct IntersectData
+{
+	std::pair<Vec3, Vec3> Verts_intersect;
+	Vec3 O;
+	Vec3 D;
+};

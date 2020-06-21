@@ -34,7 +34,7 @@ public:
 			},
 			normals_axes,
 			{	// Ordered side indices
-				0,1, 1,2, 2,3
+				0,1, 1,2, 0,2
 			}
 		};
 
@@ -89,7 +89,7 @@ public:
 			},
 			normals_axes,
 			{	// Ordered side indiced
-				0,1, 1,2, 2,3
+				0,1, 1,2, 0,2
 			}
 		};
 	}

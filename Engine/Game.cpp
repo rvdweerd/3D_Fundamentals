@@ -42,7 +42,7 @@ Game::Game( MainWindow& wnd )
 	//scenes.push_back(std::make_unique<TexSkinCubeScene>());
 
 	scenes.push_back(std::make_unique<SceneTwoTriangles>(gfx));
-	//scenes.push_back(std::make_unique<SceneDoubleCube>(gfx));
+	scenes.push_back(std::make_unique<SceneDoubleCube>(gfx));
 	//scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, L"Images\\skin.bmp"));
 	//scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, L"Images\\wood256.bmp"));
 	scenes.push_back(std::make_unique<SceneRectangleSkin>(gfx, L"Images\\skin_pyr.bmp"));
