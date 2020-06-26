@@ -122,7 +122,7 @@ public:
 		pipeline.BindRotation(R_main2);
 		pipeline.BindTranslation({ 0.0f,0.0f,1.3f });
 		// render triangles
-		std::vector<Vec3> VSet1 = pipeline.Draw(itlist1);
+		std::vector<Vertex> VSet1 = pipeline.Draw(itlist1);
 		
 		// Draw Mobile Triangle
 		
@@ -131,53 +131,51 @@ public:
 		pipeline.BindTranslation({ 0.0f,0.0f,offset_z });
 		// render triangles
 		
-		std::vector<Vec3> VSet2 = pipeline.Draw(itlist2);
+		std::vector<Vertex> VSet2 = pipeline.Draw(itlist2);
 		
-		IntersectData iDat1 = pipeline.TrianglesIntersect(VSet1[0], VSet1[1], VSet1[2], VSet2[0], VSet2[1], VSet2[2]);
-		IntersectData iDat2 = pipeline.TrianglesIntersect(VSet2[0], VSet2[1], VSet2[2], VSet1[0], VSet1[1], VSet1[2]);
-		//pipeline.DrawLine(iDat1.Verts_intersect.first, iDat1.Verts_intersect.second,Colors::Red);
-		//pipeline.DrawLine(iDat2.Verts_intersect.first, iDat2.Verts_intersect.second, Colors::Yellow);
-		//assert(iDat1.D == iDat2.D);
-		//assert(iDat1.O == iDat2.O);
+		{/*
+			IntersectData iDat1 = pipeline.TrianglesIntersect(VSet1[0], VSet1[1], VSet1[2], VSet2[0], VSet2[1], VSet2[2]);
+			IntersectData iDat2 = pipeline.TrianglesIntersect(VSet2[0], VSet2[1], VSet2[2], VSet1[0], VSet1[1], VSet1[2]);
 
-		Vec3 T1 = (iDat1.Verts_intersect.first - iDat1.O);
-		Vec3 T2 = (iDat1.Verts_intersect.second - iDat1.O);
-		Vec3 Q1 = (iDat2.Verts_intersect.first - iDat1.O);
-		Vec3 Q2 = (iDat2.Verts_intersect.second - iDat1.O);
-		float t1,t2,q1,q2;
-		
-		if ( abs(iDat1.D.x)>=abs(iDat1.D.y) && abs(iDat1.D.x)>=abs(iDat1.D.z) ) t1 = T1.x / iDat1.D.x;
-		else if (abs(iDat1.D.y) >= abs(iDat1.D.x) && abs(iDat1.D.y) >= abs(iDat1.D.z )) t1 = T1.y / iDat1.D.y;
-		else t1 = T1.z / iDat1.D.z;
+			Vec3 T1 = (iDat1.Verts_intersect.first - iDat1.O);
+			Vec3 T2 = (iDat1.Verts_intersect.second - iDat1.O);
+			Vec3 Q1 = (iDat2.Verts_intersect.first - iDat1.O);
+			Vec3 Q2 = (iDat2.Verts_intersect.second - iDat1.O);
+			float t1, t2, q1, q2;
 
-		if (abs(iDat1.D.x) >= abs(iDat1.D.y) && abs(iDat1.D.x) >= abs(iDat1.D.z)) t2 = T2.x / iDat1.D.x;
-		else if (abs(iDat1.D.y) >= abs(iDat1.D.x) && abs(iDat1.D.y) >= abs(iDat1.D.z)) t2 = T2.y / iDat1.D.y;
-		else t2 = T2.z / iDat1.D.z;
+			if (abs(iDat1.D.x) >= abs(iDat1.D.y) && abs(iDat1.D.x) >= abs(iDat1.D.z)) t1 = T1.x / iDat1.D.x;
+			else if (abs(iDat1.D.y) >= abs(iDat1.D.x) && abs(iDat1.D.y) >= abs(iDat1.D.z)) t1 = T1.y / iDat1.D.y;
+			else t1 = T1.z / iDat1.D.z;
 
-		if (abs(iDat1.D.x) >= abs(iDat1.D.y) && abs(iDat1.D.x) >= abs(iDat1.D.z)) q1 = Q1.x / iDat1.D.x;
-		else if (abs(iDat1.D.y) >= abs(iDat1.D.x) && abs(iDat1.D.y) >= abs(iDat1.D.z)) q1 = Q1.y / iDat1.D.y;
-		else q1 = Q1.z / iDat1.D.z;
+			if (abs(iDat1.D.x) >= abs(iDat1.D.y) && abs(iDat1.D.x) >= abs(iDat1.D.z)) t2 = T2.x / iDat1.D.x;
+			else if (abs(iDat1.D.y) >= abs(iDat1.D.x) && abs(iDat1.D.y) >= abs(iDat1.D.z)) t2 = T2.y / iDat1.D.y;
+			else t2 = T2.z / iDat1.D.z;
 
-		if (abs(iDat1.D.x) >= abs(iDat1.D.y) && abs(iDat1.D.x) >= abs(iDat1.D.z)) q2 = Q2.x / iDat1.D.x;
-		else if (abs(iDat1.D.y) >= abs(iDat1.D.x) && abs(iDat1.D.y) >= abs(iDat1.D.z)) q2 = Q2.y / iDat1.D.y;
-		else q2 = Q2.z / iDat1.D.z;
+			if (abs(iDat1.D.x) >= abs(iDat1.D.y) && abs(iDat1.D.x) >= abs(iDat1.D.z)) q1 = Q1.x / iDat1.D.x;
+			else if (abs(iDat1.D.y) >= abs(iDat1.D.x) && abs(iDat1.D.y) >= abs(iDat1.D.z)) q1 = Q1.y / iDat1.D.y;
+			else q1 = Q1.z / iDat1.D.z;
 
-		if (t1 > t2) 
-		{ 
-			std::swap(t1, t2); 
-			std::swap(T1, T2); 
+			if (abs(iDat1.D.x) >= abs(iDat1.D.y) && abs(iDat1.D.x) >= abs(iDat1.D.z)) q2 = Q2.x / iDat1.D.x;
+			else if (abs(iDat1.D.y) >= abs(iDat1.D.x) && abs(iDat1.D.y) >= abs(iDat1.D.z)) q2 = Q2.y / iDat1.D.y;
+			else q2 = Q2.z / iDat1.D.z;
+
+			if (t1 > t2)
+			{
+				std::swap(t1, t2);
+				std::swap(T1, T2);
+			}
+			if (q1 > q2)
+			{
+				std::swap(q1, q2);
+				std::swap(Q1, Q2);
+			}
+			Color c = Colors::Red;
+			if (t1 >= q1 && q2 >= t1 && t2 >= q2) pipeline.DrawLine(T1 + iDat1.O, Q2 + iDat1.O, c);
+			else if (t1 >= q1 && t2 <= q2) pipeline.DrawLine(T1 + iDat1.O, T2 + iDat1.O, c);
+			else if (q1 >= t1 && q2 <= t2) pipeline.DrawLine(Q1 + iDat1.O, Q2 + iDat1.O, c);
+			else if (q1 >= t1 && q1 <= t2 && q2 >= t2) pipeline.DrawLine(Q1 + iDat1.O, T2 + iDat1.O, c);
+			*/
 		}
-		if (q1 > q2) 
-		{ 
-			std::swap(q1, q2); 
-			std::swap(Q1, Q2); 
-		}
-		Color c = Colors::Red;
-		if (t1 >= q1 && q2 >= t1 && t2 >= q2) pipeline.DrawLine(T1 + iDat1.O, Q2 + iDat1.O, c);
-		else if (t1 >= q1 && t2 <= q2) pipeline.DrawLine(T1 + iDat1.O, T2 + iDat1.O, c);
-		else if (q1 >= t1 && q2 <= t2) pipeline.DrawLine(Q1 + iDat1.O, Q2 + iDat1.O, c);
-		else if (q1 >= t1 && q1 <= t2 && q2 >= t2) pipeline.DrawLine(Q1 + iDat1.O, T2 + iDat1.O, c);
-		
 	}
 	virtual float GetAngVel() override
 	{

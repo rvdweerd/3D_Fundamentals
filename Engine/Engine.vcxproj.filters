@@ -174,17 +174,17 @@
     <ClInclude Include="SolidCubeScene.h">
       <Filter>Header Files\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="SceneDoubleCube.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneTwoTriangles.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PrimitiveTriangle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GeoMath.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneDoubleCube.h">
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneTwoTriangles.h">
+      <Filter>Header Files\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

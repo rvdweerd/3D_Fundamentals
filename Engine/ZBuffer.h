@@ -43,8 +43,9 @@ public:
 	std::pair<bool, bool> Test(int x, int y, float z)
 	{
 		if (z < zBuffer[y * width + x])
+		//if (abs(z - zBuffer[y * width + x]) < .01f)
 		{
-			if (abs(z - zBuffer[y * width + x]) < 0.005f)
+			if (true)//(abs(z - zBuffer[y * width + x]) < 1.5f)
 			{
 				
 				return { true,true };
