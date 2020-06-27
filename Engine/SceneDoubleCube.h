@@ -131,6 +131,60 @@ public:
 		pipeline.BindRotation(R_main2);
 		pipeline.BindTranslation({ 0.0f,0.0f,2.0f });
 		pipeline.DrawTriangleEdges(itlist);
+
+		for (size_t i = 0; i < itlist.indices.size(); i += 3)
+		{
+			for (size_t j = 0; j < itlist.indices.size(); j += 3)
+			{
+				if ( ((VSet1[itlist.indices[i+1]].pos - VSet1[itlist.indices[i]].pos) % (VSet1[itlist.indices[i+2]].pos - VSet1[itlist.indices[i]].pos) * VSet1[itlist.indices[i]].pos <= 0.0f) &&
+					((VSet2[itlist.indices[j + 1]].pos - VSet2[itlist.indices[j]].pos) % (VSet2[itlist.indices[j + 2]].pos - VSet2[itlist.indices[j]].pos) * VSet2[itlist.indices[j]].pos <= 0.0f) )
+				{
+					IntersectData iDat1 = pipeline.TrianglesIntersect(VSet1[itlist.indices[i]].pos, VSet1[itlist.indices[i+1]].pos, VSet1[itlist.indices[i+2]].pos, VSet2[itlist.indices[j]].pos, VSet2[itlist.indices[j+1]].pos, VSet2[itlist.indices[j+2]].pos);
+					IntersectData iDat2 = pipeline.TrianglesIntersect(VSet2[itlist.indices[j]].pos, VSet2[itlist.indices[j+1]].pos, VSet2[itlist.indices[j+2]].pos, VSet1[itlist.indices[i]].pos, VSet1[itlist.indices[i+1]].pos, VSet1[itlist.indices[i+2]].pos);
+
+					Vec3 T1 = (iDat1.Verts_intersect.first - iDat1.O);
+					Vec3 T2 = (iDat1.Verts_intersect.second - iDat1.O);
+					Vec3 Q1 = (iDat2.Verts_intersect.first - iDat1.O);
+					Vec3 Q2 = (iDat2.Verts_intersect.second - iDat1.O);
+					float t1, t2, q1, q2;
+
+					if (abs(iDat1.D.x) >= abs(iDat1.D.y) && abs(iDat1.D.x) >= abs(iDat1.D.z)) t1 = T1.x / iDat1.D.x;
+					else if (abs(iDat1.D.y) >= abs(iDat1.D.x) && abs(iDat1.D.y) >= abs(iDat1.D.z)) t1 = T1.y / iDat1.D.y;
+					else t1 = T1.z / iDat1.D.z;
+
+					if (abs(iDat1.D.x) >= abs(iDat1.D.y) && abs(iDat1.D.x) >= abs(iDat1.D.z)) t2 = T2.x / iDat1.D.x;
+					else if (abs(iDat1.D.y) >= abs(iDat1.D.x) && abs(iDat1.D.y) >= abs(iDat1.D.z)) t2 = T2.y / iDat1.D.y;
+					else t2 = T2.z / iDat1.D.z;
+
+					if (abs(iDat1.D.x) >= abs(iDat1.D.y) && abs(iDat1.D.x) >= abs(iDat1.D.z)) q1 = Q1.x / iDat1.D.x;
+					else if (abs(iDat1.D.y) >= abs(iDat1.D.x) && abs(iDat1.D.y) >= abs(iDat1.D.z)) q1 = Q1.y / iDat1.D.y;
+					else q1 = Q1.z / iDat1.D.z;
+
+					if (abs(iDat1.D.x) >= abs(iDat1.D.y) && abs(iDat1.D.x) >= abs(iDat1.D.z)) q2 = Q2.x / iDat1.D.x;
+					else if (abs(iDat1.D.y) >= abs(iDat1.D.x) && abs(iDat1.D.y) >= abs(iDat1.D.z)) q2 = Q2.y / iDat1.D.y;
+					else q2 = Q2.z / iDat1.D.z;
+
+					if (t1 > t2)
+					{
+						std::swap(t1, t2);
+						std::swap(T1, T2);
+					}
+					if (q1 > q2)
+					{
+						std::swap(q1, q2);
+						std::swap(Q1, Q2);
+					}
+					Color c = Colors::Red;
+					if (t1 >= q1 && q2 >= t1 && t2 >= q2) pipeline.DrawLine(T1 + iDat1.O, Q2 + iDat1.O, c);
+					else if (t1 >= q1 && t2 <= q2) pipeline.DrawLine(T1 + iDat1.O, T2 + iDat1.O, c);
+					else if (q1 >= t1 && q2 <= t2) pipeline.DrawLine(Q1 + iDat1.O, Q2 + iDat1.O, c);
+					else if (q1 >= t1 && q1 <= t2 && q2 >= t2) pipeline.DrawLine(Q1 + iDat1.O, T2 + iDat1.O, c);
+
+				}
+			}
+		}
+
+
 	}
 	virtual float GetAngVel() override
 	{
@@ -141,7 +195,7 @@ public:
 private:
 	IndexedTriangleList<Vertex> itlist;  // { Vector<Vertex> verts, Vector<size_t> indices, Vector<Axis> normal_axes} verts: in object space (from definition)
 	Pipeline pipeline;
-	static constexpr float zVel = 1.0f;
+	static constexpr float zVel = 0.5f;
 	float offset_z = 2.0f;
 	float Dtheta_x = 0.0f;
 	float Dtheta_y = 0.0f;

@@ -133,9 +133,9 @@ public:
 		
 		std::vector<Vertex> VSet2 = pipeline.Draw(itlist2);
 		
-		{/*
-			IntersectData iDat1 = pipeline.TrianglesIntersect(VSet1[0], VSet1[1], VSet1[2], VSet2[0], VSet2[1], VSet2[2]);
-			IntersectData iDat2 = pipeline.TrianglesIntersect(VSet2[0], VSet2[1], VSet2[2], VSet1[0], VSet1[1], VSet1[2]);
+		{
+			IntersectData iDat1 = pipeline.TrianglesIntersect(VSet1[0].pos, VSet1[1].pos, VSet1[2].pos, VSet2[0].pos, VSet2[1].pos, VSet2[2].pos);
+			IntersectData iDat2 = pipeline.TrianglesIntersect(VSet2[0].pos, VSet2[1].pos, VSet2[2].pos, VSet1[0].pos, VSet1[1].pos, VSet1[2].pos);
 
 			Vec3 T1 = (iDat1.Verts_intersect.first - iDat1.O);
 			Vec3 T2 = (iDat1.Verts_intersect.second - iDat1.O);
@@ -174,7 +174,7 @@ public:
 			else if (t1 >= q1 && t2 <= q2) pipeline.DrawLine(T1 + iDat1.O, T2 + iDat1.O, c);
 			else if (q1 >= t1 && q2 <= t2) pipeline.DrawLine(Q1 + iDat1.O, Q2 + iDat1.O, c);
 			else if (q1 >= t1 && q1 <= t2 && q2 >= t2) pipeline.DrawLine(Q1 + iDat1.O, T2 + iDat1.O, c);
-			*/
+			
 		}
 	}
 	virtual float GetAngVel() override

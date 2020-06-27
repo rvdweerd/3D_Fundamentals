@@ -39,7 +39,7 @@ public:
 	{
 		zb.Clear();
 	}
-	IntersectData TrianglesIntersect(Vec3& v1_0, Vec3& v1_1, Vec3& v1_2, const Vec3& v2_0, const Vec3& v2_1, const Vec3& v2_2 )
+	IntersectData TrianglesIntersect(Vec3 v1_0, Vec3 v1_1, Vec3 v1_2, const Vec3& v2_0, const Vec3& v2_1, const Vec3& v2_2 )
 	{
 		// Plane equation for Plane2
 		Vec3 N2 = (v2_1 - v2_0) % (v2_2 - v2_0);
@@ -173,8 +173,8 @@ public:
 	}
 	void DrawLine(Vec3 p1, Vec3 p2, Color col)
 	{
-		pst.Transform(p1, false);
-		pst.Transform(p2, false);
+		pst.Transform(p1, true);
+		pst.Transform(p2, true);
 		gfx.DrawLine(p1, p2, col);
 	}
 private:
@@ -192,12 +192,12 @@ private:
 		// assemble triangles from stream of indices and vertices
 		AssembleTriangles(verticesOut, indices);
 		//ProcessSidesWireFrame(verticesOut, sides);
-		std::vector<Vertex> ret;
-		for (const auto& v : verticesOut)
-		{
-			ret.push_back(v);
-		}
-		return ret;
+		//std::vector<Vertex> ret;
+		//for (const auto& v : verticesOut)
+		//{
+		//	ret.push_back(v);
+		//}
+		return verticesOut;
 	}
 	void ProcessSidesWireFrame(const std::vector<Vertex>& vertices, const std::vector<size_t>& sides)
 	{
@@ -293,15 +293,10 @@ public:
 		}
 	}
 private:
-	void DrawTriangleEdgesOne(const Triangle<Vertex>& triangle)
+	void DrawTriangleExecute(const Vertex& v0, const Vertex& v1)
 	{
-		//gfx.DrawLine(triangle.v0.pos, triangle.v1.pos, Colors::Blue);
-		//gfx.DrawLine(triangle.v1.pos, triangle.v2.pos, Colors::Blue);
-		//gfx.DrawLine(triangle.v0.pos, triangle.v2.pos, Colors::Blue);
-		//return;
-
-		auto it0 = triangle.v0;
-		auto it1 = triangle.v1;
+		auto it0 = v0;
+		auto it1 = v1;
 		float dx = it1.pos.x - it0.pos.x;
 		float dy = it1.pos.y - it0.pos.y;
 		{
@@ -352,69 +347,6 @@ private:
 				{
 					{
 						const float z = 1.0f / iLine.pos.z;
-						if (zb.Test((int)iLine.pos.x , (int)iLine.pos.y, z).second)
-						{
-							//const auto attr = iLine * z;
-							// perform texture lookup, clamp, and write pixel
-							gfx.PutPixel((int)iLine.pos.x, (int)iLine.pos.y, Colors::Blue);
-						}
-					}
-				}
-			}
-		}
-
-		it0 = triangle.v1;
-		it1 = triangle.v2;
-		dx = it1.pos.x - it0.pos.x;
-		dy = it1.pos.y - it0.pos.y;
-		{
-			if (abs(dx) <= abs(dy)) // steep line (iterate over x)
-			{
-				if (dy < 0)
-				{
-					std::swap(it0, it1);
-					dx = -dx;
-					dy = -dy;
-				}
-				const auto dLine = (it1 - it0) / dy;
-				auto iLine = it0;
-
-				// prestep scanline interpolant
-				const int xStart = (int)ceil(it0.pos.x - 0.5f);
-				iLine += dLine * (float(xStart) + 0.5f - it0.pos.x);
-
-				for (; iLine.pos.y < it1.pos.y; iLine += dLine)
-				{
-					{
-						const float z = 1.0f / iLine.pos.z;
-						if (zb.Test((int)iLine.pos.x, (int)iLine.pos.y, z).second)
-						{
-							//const auto attr = iLine * z;
-							// perform texture lookup, clamp, and write pixel
-							gfx.PutPixel((int)iLine.pos.x, (int)iLine.pos.y, Colors::Blue);
-						}
-					}
-				}
-			}
-			else // shallow line (iterate over y)
-			{
-				if (dx < 0)
-				{
-					std::swap(it0, it1);
-					dx = -dx;
-					dy = -dy;
-				}
-				const auto dLine = (it1 - it0) / dx;
-				auto iLine = it0;
-
-				// prestep scanline interpolant
-				const int xStart = (int)ceil(it0.pos.x - 0.5f);
-				iLine += dLine * (float(xStart) + 0.5f - it0.pos.x);
-
-				for (; iLine.pos.x < it1.pos.x; iLine += dLine)
-				{
-					{
-						const float z = 1.0f / iLine.pos.z;
 						if (zb.Test((int)iLine.pos.x, (int)iLine.pos.y, z).second)
 						{
 							//const auto attr = iLine * z;
@@ -425,69 +357,17 @@ private:
 				}
 			}
 		}
-
-		//it0 = triangle.v0;
-		//it1 = triangle.v2;
-		//dx = it1.pos.x - it0.pos.x;
-		//dy = it1.pos.y - it0.pos.y;
-		//{
-		//	if (abs(dx) <= abs(dy)) // steep line (iterate over x)
-		//	{
-		//		if (dy < 0)
-		//		{
-		//			std::swap(it0, it1);
-		//			dx = -dx;
-		//			dy = -dy;
-		//		}
-		//		const auto dLine = (it1 - it0) / dy;
-		//		auto iLine = it0;
-
-		//		// prestep scanline interpolant
-		//		const int xStart = (int)ceil(it0.pos.x - 0.5f);
-		//		iLine += dLine * (float(xStart) + 0.5f - it0.pos.x);
-
-		//		for (; iLine.pos.y < it1.pos.y; iLine += dLine)
-		//		{
-		//			{
-		//				const float z = 1.0f / iLine.pos.z;
-		//				if (zb.Test((int)iLine.pos.x, (int)iLine.pos.y, z).second)
-		//				{
-		//					//const auto attr = iLine * z;
-		//					// perform texture lookup, clamp, and write pixel
-		//					gfx.PutPixel((int)iLine.pos.x, (int)iLine.pos.y, Colors::Blue);
-		//				}
-		//			}
-		//		}
-		//	}
-		//	else // shallow line (iterate over y)
-		//	{
-		//		if (dx < 0)
-		//		{
-		//			std::swap(it0, it1);
-		//			dx = -dx;
-		//			dy = -dy;
-		//		}
-		//		const auto dLine = (it1 - it0) / dx;
-		//		auto iLine = it0;
-
-		//		// prestep scanline interpolant
-		//		const int xStart = (int)ceil(it0.pos.x - 0.5f);
-		//		iLine += dLine * (float(xStart) + 0.5f - it0.pos.x);
-
-		//		for (; iLine.pos.x < it1.pos.x; iLine += dLine)
-		//		{
-		//			{
-		//				const float z = 1.0f / iLine.pos.z;
-		//				if (zb.Test((int)iLine.pos.x, (int)iLine.pos.y, z).second)
-		//				{
-		//					//const auto attr = iLine * z;
-		//					// perform texture lookup, clamp, and write pixel
-		//					gfx.PutPixel((int)iLine.pos.x, (int)iLine.pos.y, Colors::Blue);
-		//				}
-		//			}
-		//		}
-		//	}
-		//}
+	}
+	void DrawTriangleEdgesOne(const Triangle<Vertex>& triangle)
+	{
+		//gfx.DrawLine(triangle.v0.pos, triangle.v1.pos, Colors::Blue);
+		//gfx.DrawLine(triangle.v1.pos, triangle.v2.pos, Colors::Blue);
+		//gfx.DrawLine(triangle.v0.pos, triangle.v2.pos, Colors::Blue);
+		//return;
+		DrawTriangleExecute(triangle.v0, triangle.v1);
+		DrawTriangleExecute(triangle.v1, triangle.v2);
+		//DrawTriangleExecute(triangle.v0, triangle.v2);
+		return;
 	}
 	void DrawTriangle(const Triangle<Vertex>& triangle)
 	{
@@ -615,11 +495,11 @@ private:
 					// perform texture lookup, clamp, and write pixel
 					if (p.second) // on cutting edge
 					{
-						gfx.PutPixel(x, y, Colors::Blue);
+						//gfx.PutPixel(x, y, Colors::Yellow);
 					}
 					else
 					{
-						gfx.PutPixel(x, y, effect.ps(attr));
+						//gfx.PutPixel(x, y, effect.ps(attr));
 						//if (x <= xStart+0.5 || x>=xEnd-1.5 || y <= yStart+0.5 || y>=yEnd-1.5) gfx.PutPixel(x, y, Colors::Blue);
 						///*else*/ gfx.PutPixel(x, y, Colors::Black);
 					}

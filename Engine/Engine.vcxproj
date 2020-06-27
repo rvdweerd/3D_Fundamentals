@@ -172,14 +172,9 @@
     <ClInclude Include="ScenePyramidSkin.h" />
     <ClInclude Include="SceneRectangleSkin.h" />
     <ClInclude Include="SceneTwoTriangles.h" />
-    <ClInclude Include="SolidCubeScene.h" />
-    <ClInclude Include="SolidPyramidScene.h" />
     <ClInclude Include="SpriteEffect.h" />
     <ClInclude Include="Surface.h" />
     <ClInclude Include="Teapot.h" />
-    <ClInclude Include="TexCubeScene.h" />
-    <ClInclude Include="TexSkinCubeScene.h" />
-    <ClInclude Include="TexSkinPyramidScene.h" />
     <ClInclude Include="TextureEffect.h" />
     <ClInclude Include="TexVertex.h" />
     <ClInclude Include="Triangle.h" />

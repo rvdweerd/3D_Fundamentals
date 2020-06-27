@@ -8,53 +8,59 @@ public:
 		:
 		width(width_in),
 		height(height_in),
-		zBuffer(new float[(size_t)width*height])
+		pBuffer(new float[(size_t)width*height])
 	{
 	}
 	~ZBuffer()
 	{
-		delete[] zBuffer;
-		zBuffer = nullptr;
+		delete[] pBuffer;
+		pBuffer = nullptr;
 	}
+	ZBuffer(const ZBuffer&) = delete;
+	ZBuffer& operator=(const ZBuffer&) = delete;
 	void Clear()
 	{
 		for (size_t i = 0; i < (size_t)width * height; i++)
 		{
-			zBuffer[i] = std::numeric_limits<float>::infinity();
+			pBuffer[i] = std::numeric_limits<float>::infinity();
 		}
 	}
-	std::pair<bool,bool> TestAndSet(int x, int y, float z)
+	float& At(int x, int y)
 	{
-		if (z < zBuffer[y * width + x])
+		assert(x >= 0);
+		assert(x < width);
+		assert(y >= 0);
+		assert(y < height);
+		return pBuffer[x + y * width];
+	}
+	const float& At(int x, int y) const
+	{
+		return const_cast<ZBuffer*>(this)->At(x, y);
+	}
+	std::pair<bool,bool> TestAndSet(int x, int y, float depth)
+	{
+		float& depthInBuffer = At(x, y);
+		if (depth <= depthInBuffer)
 		{
-			if (abs(z - zBuffer[y * width + x]) < 0.01f)
+			if (abs(depth - depthInBuffer) < 0.01f)
 			{
-				zBuffer[y * width + x] = z;
-				return { true,true };
+				depthInBuffer = depth;
+				return { true,true }; // point within threshold of intersection
 			}
 			else
 			{
-				zBuffer[y * width + x] = z;
-				return { true,false };
+				depthInBuffer = depth;
+				return { true,false }; // point outside threshold of intersection
 			}
 		}
 		return { false,false };
 	}
-	std::pair<bool, bool> Test(int x, int y, float z)
+	std::pair<bool, bool> Test(int x, int y, float depth)
 	{
-		if (z < zBuffer[y * width + x])
-		//if (abs(z - zBuffer[y * width + x]) < .01f)
+		const float& depthInBuffer = At(x, y);
+		if (depth <= depthInBuffer+0.01f)
 		{
-			if (true)//(abs(z - zBuffer[y * width + x]) < 1.5f)
-			{
-				
-				return { true,true };
-			}
-			else
-			{
-				
-				return { true,false };
-			}
+			return { true,true };
 		}
 		return { false,false };
 	}
@@ -62,5 +68,5 @@ public:
 private:
 	int width;
 	int height;
-	float* zBuffer = nullptr;
+	float* pBuffer = nullptr;
 };
