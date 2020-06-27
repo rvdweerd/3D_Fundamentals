@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Pipeline.h"
+#include "DefaultVertexShader.h"
 
 class TextureEffect
 {
@@ -71,6 +72,9 @@ public:
 		Vec3 pos;
 		Vec2 tc;
 	};
+	// Default VS: rotates and translates vertices (attributes untouched)
+	typedef DefaultVertexShader<Vertex>  VertexShader;
+
 	class PixelShader
 	{
 	public:
@@ -117,5 +121,6 @@ public:
 		float tex_yclamp;
 	};
 public:
+	VertexShader vs;
 	PixelShader ps;
 };

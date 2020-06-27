@@ -119,16 +119,16 @@ public:
 		
 		// set pipeline transform
 		//pipeline.BindRotation(R_main_fixed);
-		pipeline.BindRotation(R_main2);
-		pipeline.BindTranslation({ 0.0f,0.0f,1.3f });
+		pipeline.effect.vs.BindRotation(R_main2);
+		pipeline.effect.vs.BindTranslation({ 0.0f,0.0f,1.3f });
 		// render triangles
 		std::vector<Vertex> VSet1 = pipeline.Draw(itlist1);
 		
 		// Draw Mobile Triangle
 		
 		// set pipeline transform
-		pipeline.BindRotation(R_main);
-		pipeline.BindTranslation({ 0.0f,0.0f,offset_z });
+		pipeline.effect.vs.BindRotation(R_main);
+		pipeline.effect.vs.BindTranslation({ 0.0f,0.0f,offset_z });
 		// render triangles
 		
 		std::vector<Vertex> VSet2 = pipeline.Draw(itlist2);

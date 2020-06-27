@@ -1,6 +1,7 @@
 #pragma once
-
 #include "Pipeline.h"
+#include "DefaultVertexShader.h"
+
 
 class VertexColorEffect
 {
@@ -71,6 +72,9 @@ public:
 		Vec3 pos;
 		Vec3 color;
 	};
+	// Default VS: rotates and translates vertices (attributes untouched)
+	typedef DefaultVertexShader<Vertex>  VertexShader;
+
 	class PixelShader
 	{
 	public:
@@ -82,5 +86,6 @@ public:
 		}
 	};
 public:
+	VertexShader vs;
 	PixelShader ps;
 };

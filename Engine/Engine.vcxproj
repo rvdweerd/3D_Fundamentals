@@ -143,6 +143,7 @@
     <ClInclude Include="Colors.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="CubeWithSkin.h" />
+    <ClInclude Include="DefaultVertexShader.h" />
     <ClInclude Include="DXErr.h" />
     <ClInclude Include="FrameTimer.h" />
     <ClInclude Include="Game.h" />

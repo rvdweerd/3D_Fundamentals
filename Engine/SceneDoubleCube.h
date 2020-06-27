@@ -114,22 +114,22 @@ public:
 		pipeline.BeginFrame();
 		// Draw Fixed Cube
 		// set pipeline transform
-		pipeline.BindRotation(R_main2);
-		pipeline.BindTranslation({ 0.0f,0.0f,2.0f });
+		pipeline.effect.vs.BindRotation(R_main2);
+		pipeline.effect.vs.BindTranslation({ 0.0f,0.0f,2.0f });
 		// render triangles
 		std::vector<Vertex> VSet1 = pipeline.Draw(itlist);
 		
 		// Draw Mobile Cube	
 		// set pipeline transform
-		pipeline.BindRotation(R_main);
-		pipeline.BindTranslation({ 0.0f,0.0f,offset_z });
+		pipeline.effect.vs.BindRotation(R_main);
+		pipeline.effect.vs.BindTranslation({ 0.0f,0.0f,offset_z });
 		// render triangles
 		std::vector<Vertex> VSet2 = pipeline.Draw(itlist);
 		
 		pipeline.DrawTriangleEdges(itlist);
 		
-		pipeline.BindRotation(R_main2);
-		pipeline.BindTranslation({ 0.0f,0.0f,2.0f });
+		pipeline.effect.vs.BindRotation(R_main2);
+		pipeline.effect.vs.BindTranslation({ 0.0f,0.0f,2.0f });
 		pipeline.DrawTriangleEdges(itlist);
 
 		for (size_t i = 0; i < itlist.indices.size(); i += 3)

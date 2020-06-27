@@ -16,24 +16,17 @@ class Pipeline
 {
 public:
 	typedef typename Effect::Vertex Vertex;
+	typedef typename Effect::VertexShader::Output VSOut;
 	Pipeline(Graphics& gfx)
 		:
 		gfx(gfx),
 		zb(Graphics::ScreenWidth,Graphics::ScreenHeight)
 	{}
-	std::vector<Vertex> Draw(IndexedTriangleList<Vertex>& triList)
+	std::vector<VSOut> Draw(IndexedTriangleList<VSOut>& triList)
 	{
-		std::vector<Vertex> ret = ProcessVertices(triList.vertices, triList.indices, triList.sides);
+		std::vector<VSOut> ret = ProcessVertices(triList.vertices, triList.indices, triList.sides);
 		ProcessAxes(triList.normals_axes);
 		return ret;
-	}
-	void BindRotation(const Mat3& rotation_in)
-	{
-		rotation = rotation_in;
-	}
-	void BindTranslation(const Vec3& translation_in)
-	{
-		translation = translation_in;
 	}
 	void BeginFrame()
 	{
@@ -178,25 +171,16 @@ public:
 		gfx.DrawLine(p1, p2, col);
 	}
 private:
-	std::vector<Vertex> ProcessVertices(const std::vector<Vertex>& vertices, const std::vector<size_t>& indices, const std::vector<size_t>& sides)
+	std::vector<VSOut> ProcessVertices(const std::vector<VSOut>& vertices, const std::vector<size_t>& indices, const std::vector<size_t>& sides)
 	{
 		// create vertex vector for vs output
-		std::vector<Vertex> verticesOut;
+		std::vector<VSOut> verticesOut(vertices.size());
 
-		// transform vertices using matrix + vector
-		for (const auto& v : vertices)
-		{
-			verticesOut.emplace_back(v.pos * rotation + translation, v);
-		}
+		// transform vertices with VS
+		std::transform(vertices.begin(), vertices.end(), verticesOut.begin(), effect.vs);
 		
 		// assemble triangles from stream of indices and vertices
 		AssembleTriangles(verticesOut, indices);
-		//ProcessSidesWireFrame(verticesOut, sides);
-		//std::vector<Vertex> ret;
-		//for (const auto& v : verticesOut)
-		//{
-		//	ret.push_back(v);
-		//}
 		return verticesOut;
 	}
 	void ProcessSidesWireFrame(const std::vector<Vertex>& vertices, const std::vector<size_t>& sides)
@@ -218,7 +202,7 @@ private:
 
 			for (const auto& a : normals_axes)
 			{
-				axesOut.emplace_back(a.p0 * rotation + translation, a.p1 * rotation + translation, a.col);
+				axesOut.emplace_back( this->effect.vs(a.p0), this->effect.vs(a.p1), a.col);
 			}
 			for (auto& a : axesOut)
 			{
@@ -229,7 +213,7 @@ private:
 			}
 		}
 	}
-	void AssembleTriangles(const std::vector<Vertex>& vertices, const std::vector<size_t>& indices)
+	void AssembleTriangles(const std::vector<VSOut>& vertices, const std::vector<size_t>& indices)
 	{
 		// assemble triangles in the stream and process
 		for (size_t i = 0, end = indices.size() / 3;
@@ -247,11 +231,11 @@ private:
 			}
 		}
 	}
-	void ProcessTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2)
+	void ProcessTriangle(const VSOut& v0, const VSOut& v1, const VSOut& v2)
 	{
-		PostProcessTriangleVertices(Triangle<Vertex>{ v0, v1, v2 });
+		PostProcessTriangleVertices(Triangle<VSOut>{ v0, v1, v2 });
 	}
-	void PostProcessTriangleVertices(Triangle<Vertex>& triangle)
+	void PostProcessTriangleVertices(Triangle<VSOut>& triangle)
 	{
 		// perspective divide and screen transform for all 3 vertices
 		pst.Transform(triangle.v0,true);
@@ -262,16 +246,15 @@ private:
 		DrawTriangle(triangle);
 		
 	}
-	//void DrawTriangleEdges(const Triangle<Vertex>& triangle)
 public:
-	void DrawTriangleEdges(const IndexedTriangleList<Vertex>& triList)
+	void DrawTriangleEdges(const IndexedTriangleList<VSOut>& triList)
 	{
 		auto vertices = triList.vertices;
 		auto indices = triList.indices;
-		std::vector<Vertex> verticesOut;
+		std::vector<VSOut> verticesOut;
 		for (const auto& v : vertices)
 		{
-			verticesOut.emplace_back(v.pos * rotation + translation, v);
+			verticesOut.emplace_back(this->effect.vs(v.pos) , v);
 		}
 		// assemble triangles in the stream and process
 		for (size_t i = 0, end = indices.size() / 3;
@@ -288,12 +271,12 @@ public:
 				pst.Transform(v0, true);
 				pst.Transform(v1, true);
 				pst.Transform(v2, true);
-				DrawTriangleEdgesOne(Triangle<Vertex>{v0, v1, v2});
+				DrawTriangleEdgesOne(Triangle<VSOut>{v0, v1, v2});
 			}
 		}
 	}
 private:
-	void DrawTriangleExecute(const Vertex& v0, const Vertex& v1)
+	void DrawTriangleExecute(const VSOut& v0, const VSOut& v1)
 	{
 		auto it0 = v0;
 		auto it1 = v1;
@@ -358,7 +341,7 @@ private:
 			}
 		}
 	}
-	void DrawTriangleEdgesOne(const Triangle<Vertex>& triangle)
+	void DrawTriangleEdgesOne(const Triangle<VSOut>& triangle)
 	{
 		//gfx.DrawLine(triangle.v0.pos, triangle.v1.pos, Colors::Blue);
 		//gfx.DrawLine(triangle.v1.pos, triangle.v2.pos, Colors::Blue);
@@ -369,12 +352,12 @@ private:
 		//DrawTriangleExecute(triangle.v0, triangle.v2);
 		return;
 	}
-	void DrawTriangle(const Triangle<Vertex>& triangle)
+	void DrawTriangle(const Triangle<VSOut>& triangle)
 	{
 		// using pointers so we can swap (for sorting purposes)
-		const Vertex* pv0 = &triangle.v0;
-		const Vertex* pv1 = &triangle.v1;
-		const Vertex* pv2 = &triangle.v2;
+		const VSOut* pv0 = &triangle.v0;
+		const VSOut* pv1 = &triangle.v1;
+		const VSOut* pv2 = &triangle.v2;
 
 		// sorting vertices by y
 		if (pv1->pos.y < pv0->pos.y) std::swap(pv0, pv1);
@@ -415,9 +398,7 @@ private:
 			}
 		}
 	}
-	void DrawFlatTopTriangle(const Vertex& it0,
-		const Vertex& it1,
-		const Vertex& it2)
+	void DrawFlatTopTriangle(const VSOut& it0,const VSOut& it1,const VSOut& it2)
 	{
 		// calulcate dVertex / dy
 // change in interpolant for every 1 change in y
@@ -431,9 +412,7 @@ private:
 		// call the flat triangle render routine
 		DrawFlatTriangle(it0, it1, it2, dit0, dit1, itEdge1);
 	}
-	void DrawFlatBottomTriangle(const Vertex& it0,
-		const Vertex& it1,
-		const Vertex& it2)
+	void DrawFlatBottomTriangle(const VSOut& it0,const VSOut& it1,const VSOut& it2)
 	{
 		// calulcate dVertex / dy
 		// change in interpolant for every 1 change in y
@@ -447,12 +426,12 @@ private:
 		// call the flat triangle render routine
 		DrawFlatTriangle(it0, it1, it2, dit0, dit1, itEdge1);
 	}
-	void DrawFlatTriangle(const Vertex& it0,
-		const Vertex& it1,
-		const Vertex& it2,
-		const Vertex& dv0,
-		const Vertex& dv1,
-		Vertex itEdge1)
+	void DrawFlatTriangle(const VSOut& it0,
+		const VSOut& it1,
+		const VSOut& it2,
+		const VSOut& dv0,
+		const VSOut& dv1,
+		VSOut itEdge1)
 	{
 		// create edge interpolant for left edge (always v0)
 		auto itEdge0 = it0;
@@ -499,7 +478,7 @@ private:
 					}
 					else
 					{
-						//gfx.PutPixel(x, y, effect.ps(attr));
+						gfx.PutPixel(x, y, effect.ps(attr));
 						//if (x <= xStart+0.5 || x>=xEnd-1.5 || y <= yStart+0.5 || y>=yEnd-1.5) gfx.PutPixel(x, y, Colors::Blue);
 						///*else*/ gfx.PutPixel(x, y, Colors::Black);
 					}
@@ -510,8 +489,6 @@ private:
 private:
 	Graphics& gfx;
 	PubeScreenTransformer pst;
-	Mat3 rotation;
-	Vec3 translation;
 	ZBuffer zb;
 public:
 	Effect effect;

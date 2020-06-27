@@ -86,8 +86,8 @@ public:
 	{
 		pipeline.BeginFrame();
 		// set pipeline transform
-		pipeline.BindRotation(R_main);
-		pipeline.BindTranslation({ 0.0f,0.0f,offset_z });
+		pipeline.effect.vs.BindRotation(R_main);
+		pipeline.effect.vs.BindTranslation({ 0.0f,0.0f,offset_z });
 		// render triangles
 		pipeline.Draw(itlist);
 	}
