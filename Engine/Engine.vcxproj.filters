@@ -174,7 +174,22 @@
     <ClInclude Include="SpriteEffect.h">
       <Filter>Header Files\Framework files</Filter>
     </ClInclude>
+    <ClInclude Include="Plane.h">
+      <Filter>Header Files\3D_shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneVertexWave.h">
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
     <ClInclude Include="DefaultVertexShader.h">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="WaveVertexTextureEffect.h">
+      <Filter>Header Files\PS_Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="WaveVertexSolidEffect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneVertexWaveSolid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -29,6 +29,8 @@
 #include "SceneRectangleSkin.h"
 #include "SceneDoubleCube.h"
 #include "SceneTwoTriangles.h"
+#include "SceneVertexWave.h"
+#include "SceneVertexWaveSolid.h"
 
 Game::Game( MainWindow& wnd )
 	:
@@ -38,17 +40,19 @@ Game::Game( MainWindow& wnd )
 	//zb(Graphics::ScreenWidth, Graphics::ScreenHeight)
 {
 	
-	scenes.push_back(std::make_unique<SceneTwoTriangles>(gfx));
-	scenes.push_back(std::make_unique<SceneDoubleCube>(gfx));
-	scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, L"Images\\skin.bmp"));
-	scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, L"Images\\wood256.bmp"));
-	scenes.push_back(std::make_unique<SceneRectangleSkin>(gfx, L"Images\\skin_pyr.bmp"));
-	scenes.push_back(std::make_unique<ScenePyramidSkin>(gfx, L"Images\\skin_pyr.bmp"));
-	scenes.push_back(std::make_unique<ScenePyramidSkin>(gfx, L"Images\\wood256.bmp"));
-	scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, Colors::LightGray));
-	scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, L"Images\\dice.bmp"));
-	scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, L"Images\\eye.bmp"));
-	scenes.push_back(std::make_unique<SceneCubeVertexColor>(gfx));
+	scenes.push_back(std::make_unique<SceneVertexWave>(gfx));
+	scenes.push_back(std::make_unique<SceneVertexWaveSolid>(gfx));
+	//scenes.push_back(std::make_unique<SceneTwoTriangles>(gfx));
+	//scenes.push_back(std::make_unique<SceneDoubleCube>(gfx));
+	//scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, L"Images\\skin.bmp"));
+	//scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, L"Images\\wood256.bmp"));
+	//scenes.push_back(std::make_unique<SceneRectangleSkin>(gfx, L"Images\\skin_pyr.bmp"));
+	//scenes.push_back(std::make_unique<ScenePyramidSkin>(gfx, L"Images\\skin_pyr.bmp"));
+	//scenes.push_back(std::make_unique<ScenePyramidSkin>(gfx, L"Images\\wood256.bmp"));
+	//scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, Colors::LightGray));
+	//scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, L"Images\\link90x90.bmp"));
+	//scenes.push_back(std::make_unique<SceneCubeSkin>(gfx, L"Images\\eye.bmp"));
+	//scenes.push_back(std::make_unique<SceneCubeVertexColor>(gfx));
 
 	currentScene = scenes.begin();
 }

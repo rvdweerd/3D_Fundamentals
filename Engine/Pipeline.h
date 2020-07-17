@@ -10,7 +10,6 @@
 #include "ZBuffer.h"
 //#include "GeoMath.h"
 
-
 template<class Effect>
 class Pipeline
 {
@@ -25,7 +24,7 @@ public:
 	std::vector<VSOut> Draw(IndexedTriangleList<VSOut>& triList)
 	{
 		std::vector<VSOut> ret = ProcessVertices(triList.vertices, triList.indices, triList.sides);
-		ProcessAxes(triList.normals_axes);
+		//ProcessAxes(triList.normals_axes);
 		return ret;
 	}
 	void BeginFrame()
@@ -176,7 +175,7 @@ private:
 		// create vertex vector for vs output
 		std::vector<VSOut> verticesOut(vertices.size());
 
-		// transform vertices with VS
+		// transform vertices with Vertex Shader
 		std::transform(vertices.begin(), vertices.end(), verticesOut.begin(), effect.vs);
 		
 		// assemble triangles from stream of indices and vertices
@@ -194,25 +193,25 @@ private:
 			}
 		}
 	}
-	void ProcessAxes(const std::vector<Axis>& normals_axes)
-	{
-		if (normals_axes.size() > 0)
-		{
-			std::vector<Axis> axesOut;
+	//void ProcessAxes(const std::vector<Axis>& normals_axes)
+	//{
+	//	if (normals_axes.size() > 0)
+	//	{
+	//		std::vector<Axis> axesOut;
 
-			for (const auto& a : normals_axes)
-			{
-				axesOut.emplace_back( this->effect.vs(a.p0), this->effect.vs(a.p1), a.col);
-			}
-			for (auto& a : axesOut)
-			{
-				Vec2 p0 = pst.GetTransformed(a.p0, true);
-				Vec2 p1 = pst.GetTransformed(a.p1, true);
+	//		for (const auto& a : normals_axes)
+	//		{
+	//			axesOut.emplace_back( this->effect.vs(a.p0), this->effect.vs(a.p1), a.col);
+	//		}
+	//		for (auto& a : axesOut)
+	//		{
+	//			Vec2 p0 = pst.GetTransformed(a.p0, true);
+	//			Vec2 p1 = pst.GetTransformed(a.p1, true);
 
-				gfx.DrawLine(p0, p1, a.col);
-			}
-		}
-	}
+	//			gfx.DrawLine(p0, p1, a.col);
+	//		}
+	//	}
+	//}
 	void AssembleTriangles(const std::vector<VSOut>& vertices, const std::vector<size_t>& indices)
 	{
 		// assemble triangles in the stream and process
