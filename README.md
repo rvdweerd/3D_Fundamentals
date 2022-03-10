@@ -1,6 +1,6 @@
 # 3D_Fundamentals
 
-Building a 3d rendering pipeline. Following Chili tutorials 3d Fundamentals<br />
+Building a 3d rendering pipeline. (DirectX Framework cloned)<br />
 
 Stage: Backface culling, independent rotations <br />
 ![cube demo](cube.gif)
